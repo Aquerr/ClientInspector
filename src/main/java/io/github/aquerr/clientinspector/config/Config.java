@@ -1,8 +1,11 @@
 package io.github.aquerr.clientinspector.config;
 
+import io.github.aquerr.clientinspector.ClientInspector;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.util.TypeTokens;
 
 import java.io.IOException;
@@ -24,7 +27,11 @@ public class Config
         try
         {
             Files.createDirectories(configDir);
-            Files.createFile(configPath);
+            final Asset asset = Sponge.getAssetManager().getAsset(ClientInspector.getInstance(), "config.conf").orElse(null);
+            if (asset != null)
+            {
+                asset.copyToFile(configPath, false, true);
+            }
         }
         catch (IOException e)
         {

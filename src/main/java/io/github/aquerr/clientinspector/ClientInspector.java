@@ -25,6 +25,12 @@ public class ClientInspector
             VERSION = "1.0.0",
             URL = "https://github.com/Aquerr/ClientInspector";
 
+    private static ClientInspector plugin;
+
+    public static ClientInspector getInstance()
+    {
+        return plugin;
+    }
 
     @Inject
     @ConfigDir(sharedRoot = false)
@@ -40,6 +46,7 @@ public class ClientInspector
     @Listener
     public void onServerInit(final GameInitializationEvent event)
     {
+        plugin = this;
         this.logger.info("Initializing " + NAME);
         this.config = Config.createConfig(this.configDir);
         this.logHandler = new LogHandler(this.configDir);
