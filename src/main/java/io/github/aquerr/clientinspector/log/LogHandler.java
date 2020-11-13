@@ -1,5 +1,6 @@
 package io.github.aquerr.clientinspector.log;
 
+import io.github.aquerr.clientinspector.util.ForgePlayerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.api.entity.living.player.Player;
@@ -9,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Set;
@@ -41,7 +43,25 @@ public class LogHandler
         if (Files.notExists(logFilePath))
             Files.createFile(logFilePath);
 
-        final String logMessage = "[" + LocalTime.now().toString() + "] " + "Player '" + player.getName() + "' connected with mods " + Arrays.toString(detectedModsNames.toArray()) + "\n";
-        Files.write(logFilePath, logMessage.getBytes(), StandardOpenOption.APPEND);
+        Files.write(logFilePath, buildLogMessage(player, detectedModsNames).getBytes(), StandardOpenOption.APPEND);
+    }
+
+    private String buildLogMessage(final Player player, final Set<String> detectedModsNames)
+    {
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[")
+                .append(LocalTime.now().toString())
+                .append("]")
+                .append(" Player ")
+                .append("'")
+                .append(player.getName())
+                .append("'")
+                .append(" with ip address '")
+                .append(ForgePlayerUtil.getIpAddress(player))
+                .append("'")
+                .append(" connected with mods ")
+                .append(Arrays.toString(detectedModsNames.toArray()))
+                .append("\n");
+        return stringBuilder.toString();
     }
 }

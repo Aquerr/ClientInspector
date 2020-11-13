@@ -21,4 +21,10 @@ public class ForgePlayerUtil
 
         return modList.keySet();
     }
+
+    public static String getIpAddress(Player player)
+    {
+        EntityPlayerMP entityPlayerMP = (EntityPlayerMP)player;
+        return entityPlayerMP.getPlayerIP();
+    }
 }
