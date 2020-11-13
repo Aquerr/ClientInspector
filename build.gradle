@@ -21,8 +21,8 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 group 'io.github.aquerr.clientinspector'
-version '1.0-SNAPSHOT'
-description = 'A plugin that inspects data of the clients who connects to the server and preforms predefined tasks'
+version '1.0.0-SNAPSHOT'
+description = 'A plugin that inspects connecting players data and executes specified commands on them'
 
 compileJava.options.encoding = 'UTF-8'
 
