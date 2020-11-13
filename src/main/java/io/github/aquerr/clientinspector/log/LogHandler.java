@@ -50,16 +50,18 @@ public class LogHandler
     {
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[")
-                .append(LocalTime.now().toString())
+                .append(LocalTime.now().withNano(0).toString())
                 .append("]")
                 .append(" Player ")
-                .append("'")
+                .append("[name=")
                 .append(player.getName())
-                .append("'")
-                .append(" with ip address '")
+                .append(", uuid=")
+                .append(player.getUniqueId().toString())
+                .append("]")
+                .append(" connected from '")
                 .append(ForgePlayerUtil.getIpAddress(player))
                 .append("'")
-                .append(" connected with mods ")
+                .append(" with mods ")
                 .append(Arrays.toString(detectedModsNames.toArray()))
                 .append("\n");
         return stringBuilder.toString();

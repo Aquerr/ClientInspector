@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
 
 public class Inspector
 {
@@ -38,7 +40,8 @@ public class Inspector
         {
             for (final String modNameToDetect : modsNamesToDetect)
             {
-                if (StringUtils.equalsIgnoreCase(playerModName, modNameToDetect))
+                final Pattern pattern = Pattern.compile(modNameToDetect, Pattern.CASE_INSENSITIVE);
+                if (pattern.matcher(playerModName).matches())
                 {
                     detectedModsNames.add(playerModName);
                 }
@@ -47,14 +50,18 @@ public class Inspector
 
         if (detectedModsNames.size() != 0)
         {
-            try
+            // IO operation -> run in separate thread.
+            CompletableFuture.runAsync(() ->
             {
-                this.logHandler.logPlayerWithMods(player, detectedModsNames);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+                try
+                {
+                    this.logHandler.logPlayerWithMods(player, detectedModsNames);
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            });
             executeCommandsOnPlayer(player, this.config.getCommandsToRun());
         }
     }
