@@ -11,6 +11,7 @@ import org.spongepowered.api.command.CommandManager;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.EventManager;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 
@@ -56,6 +57,12 @@ public class ClientInspector
         registerListeners();
 
         this.logger.info("Plugin load completed!");
+    }
+
+    @Listener
+    public void onServerReload(final GameReloadEvent event)
+    {
+        this.config.reload();
     }
 
     public Config getConfig()

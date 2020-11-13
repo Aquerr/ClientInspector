@@ -52,7 +52,7 @@ public class Config
         {
             e.printStackTrace();
         }
-        load();
+        reload();
     }
 
     public List<String> getCommandsToRun()
@@ -65,7 +65,7 @@ public class Config
         return modsToDetect;
     }
 
-    private void load()
+    public void reload()
     {
         try
         {
