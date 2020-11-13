@@ -44,14 +44,6 @@ public class Config
     private Config(Path configPath)
     {
         this.hoconConfigurationLoader = HoconConfigurationLoader.builder().setPath(configPath).build();
-        try
-        {
-            this.configNode = this.hoconConfigurationLoader.load();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
         reload();
     }
 
@@ -69,10 +61,12 @@ public class Config
     {
         try
         {
+            this.configNode = this.hoconConfigurationLoader.load();
+
             this.commandsToRun = this.configNode.getNode("commands-to-run").getList(TypeTokens.STRING_TOKEN, Collections.emptyList());
             this.modsToDetect = new HashSet<>(this.configNode.getNode("mods-to-detect").getList(TypeTokens.STRING_TOKEN, Collections.emptyList()));
         }
-        catch (ObjectMappingException e)
+        catch (ObjectMappingException | IOException e)
         {
             e.printStackTrace();
         }
