@@ -18,7 +18,6 @@ public class ForgePlayerUtil
         NetworkManager networkManager = networkHandlerPlayServer.netManager;
         NetworkDispatcher networkDispatcher = NetworkDispatcher.get(networkManager);
         Map<String, String> modList = networkDispatcher.getModList();
-
         return modList.keySet();
     }
 

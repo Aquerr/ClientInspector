@@ -46,6 +46,8 @@ jar {
     }
 }
 
+jar.finalizedBy('reobfJar')
+
 minecraft {
     forgeVersion = '1.12.2-14.23.5.2838'
     mappings = 'stable_39'
