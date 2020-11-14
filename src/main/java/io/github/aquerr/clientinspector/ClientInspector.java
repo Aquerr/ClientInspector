@@ -23,7 +23,7 @@ public class ClientInspector
     public static final String ID = "clientinspector",
             NAME = "Client Inspector",
             DESCRIPTION = "A plugin that inspects connecting players data and executes specified commands on them",
-            VERSION = "1.0.0",
+            VERSION = "1.0.1",
             URL = "https://github.com/Aquerr/ClientInspector";
 
     private static ClientInspector plugin;
