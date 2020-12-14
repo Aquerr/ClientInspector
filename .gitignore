@@ -3,6 +3,9 @@ bin
 build
 out
 lib
+run
+run-client
+run-server
 *.class
 
 # Log file

@@ -1,103 +1,61 @@
 package io.github.aquerr.clientinspector;
 
-import com.google.inject.Inject;
-import io.github.aquerr.clientinspector.config.Config;
-import io.github.aquerr.clientinspector.inspector.Inspector;
-import io.github.aquerr.clientinspector.listener.PlayerConnectListener;
-import io.github.aquerr.clientinspector.log.LogHandler;
-import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandManager;
-import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.event.EventManager;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.GameReloadEvent;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.plugin.Plugin;
+import io.github.aquerr.clientinspector.server.packet.ClientInspectorPacketRegistry;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.Logger;
 
-import java.nio.file.Path;
-
-@Plugin(id = ClientInspector.ID, name = ClientInspector.NAME, version = ClientInspector.VERSION, description = ClientInspector.DESCRIPTION, authors = {"Aquerr/Nerdi"}, url = ClientInspector.URL)
+@Mod(modid = ClientInspector.ID, name = ClientInspector.NAME, version = ClientInspector.VERSION, acceptedMinecraftVersions = "1.12.2")
 public class ClientInspector
 {
     public static final String ID = "clientinspector",
             NAME = "Client Inspector",
-            DESCRIPTION = "A plugin that inspects connecting players data and executes specified commands on them",
-            VERSION = "1.0.1",
-            URL = "https://github.com/Aquerr/ClientInspector";
+            VERSION = "1.1.0";
 
-    private static ClientInspector plugin;
+    @SidedProxy(clientSide = "io.github.aquerr.clientinspector.client.ClientProxy", serverSide = "io.github.aquerr.clientinspector.server.ServerProxy", modId = ClientInspector.ID)
+    public static Proxy PROXY;
+
+    @Mod.Instance(ClientInspector.ID)
+    private static ClientInspector INSTANCE;
 
     public static ClientInspector getInstance()
     {
-        return plugin;
+        return INSTANCE;
     }
 
-    @Inject
-    @ConfigDir(sharedRoot = false)
-    private Path configDir;
-
-    @Inject
     private Logger logger;
 
-    private Config config;
-    private Inspector inspector;
-    private LogHandler logHandler;
-
-    @Listener
-    public void onServerInit(final GameInitializationEvent event)
+    @Mod.EventHandler
+    public void onPreInit(FMLPreInitializationEvent event)
     {
-        plugin = this;
+        INSTANCE = this;
+        this.logger = event.getModLog();
+        PROXY.preInit(event);
+    }
+
+    @Mod.EventHandler
+    public void onInit(FMLInitializationEvent event)
+    {
+        PROXY.init(event);
+
         this.logger.info("Initializing " + NAME);
-        this.config = Config.createConfig(this.configDir);
-        this.logHandler = new LogHandler(this.configDir);
-        this.inspector = new Inspector(this.config, this.logHandler);
 
-        registerCommands();
-        registerListeners();
+        ClientInspectorPacketRegistry.registerPackets();
 
-        this.logger.info("Plugin load completed!");
+        this.logger.info("Mod load completed!");
     }
 
-    @Listener
-    public void onServerReload(final GameReloadEvent event)
+    @Mod.EventHandler
+    public void onPostInit(FMLPostInitializationEvent event)
     {
-        this.config.reload();
-    }
-
-    public Config getConfig()
-    {
-        return config;
+        PROXY.postInit(event);
     }
 
     public Logger getLogger()
     {
         return logger;
-    }
-
-    public Path getConfigDir()
-    {
-        return configDir;
-    }
-
-    public Inspector getInspector()
-    {
-        return inspector;
-    }
-
-    public LogHandler getLogHandler()
-    {
-        return logHandler;
-    }
-
-    private void registerCommands()
-    {
-        final CommandManager commandManager = Sponge.getCommandManager();
-    }
-
-    private void registerListeners()
-    {
-        final EventManager eventManager = Sponge.getEventManager();
-        eventManager.registerListeners(this, new PlayerConnectListener(this));
     }
 }

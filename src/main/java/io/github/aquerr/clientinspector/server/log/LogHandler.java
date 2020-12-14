@@ -1,29 +1,35 @@
-package io.github.aquerr.clientinspector.log;
+package io.github.aquerr.clientinspector.server.log;
 
-import io.github.aquerr.clientinspector.util.ForgePlayerUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spongepowered.api.entity.living.player.Player;
+import io.github.aquerr.clientinspector.ClientInspector;
+import net.minecraft.entity.player.EntityPlayerMP;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Set;
 
 public class LogHandler
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger(LogHandler.class);
+    private static final LogHandler INSTANCE = new LogHandler();
 
-    private Path logsDirPath;
-
-    public LogHandler(final Path configDir)
+    public static LogHandler getInstance()
     {
-        this.logsDirPath = configDir.resolve("logs");
+        return INSTANCE;
+    }
+
+    private final Path logsDirPath;
+
+    private LogHandler()
+    {
+        this.logsDirPath = Paths.get("config", ClientInspector.ID, "logs");
         try
         {
             Files.createDirectories(this.logsDirPath);
@@ -34,7 +40,7 @@ public class LogHandler
         }
     }
 
-    public void logPlayerWithMods(final Player player, final Set<String> detectedModsNames) throws IOException
+    public void logPlayerWithMods(final EntityPlayerMP player, final Set<String> detectedModsNames) throws IOException
     {
         LOGGER.info("Logging player '" + player.getName() + "' with mods " + Arrays.toString(detectedModsNames.toArray()));
 
@@ -46,7 +52,7 @@ public class LogHandler
         Files.write(logFilePath, buildLogMessage(player, detectedModsNames).getBytes(), StandardOpenOption.APPEND);
     }
 
-    private String buildLogMessage(final Player player, final Set<String> detectedModsNames)
+    private String buildLogMessage(final EntityPlayerMP player, final Set<String> detectedModsNames)
     {
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[")
@@ -56,10 +62,10 @@ public class LogHandler
                 .append("[name=")
                 .append(player.getName())
                 .append(", uuid=")
-                .append(player.getUniqueId().toString())
+                .append(player.getUniqueID().toString())
                 .append("]")
                 .append(" connected from '")
-                .append(ForgePlayerUtil.getIpAddress(player))
+                .append(player.getPlayerIP())
                 .append("'")
                 .append(" with mods ")
                 .append(Arrays.toString(detectedModsNames.toArray()))
