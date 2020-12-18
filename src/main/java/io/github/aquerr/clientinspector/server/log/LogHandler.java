@@ -29,7 +29,7 @@ public class LogHandler
 
     private LogHandler()
     {
-        this.logsDirPath = Paths.get("config", ClientInspector.ID, "logs");
+        this.logsDirPath = Paths.get(ClientInspector.ID + "-logs");
         try
         {
             Files.createDirectories(this.logsDirPath);
@@ -67,7 +67,7 @@ public class LogHandler
                 .append(" connected from '")
                 .append(player.getPlayerIP())
                 .append("'")
-                .append(" with mods ")
+                .append(" with detected mods ")
                 .append(Arrays.toString(detectedModsNames.toArray()))
                 .append("\n");
         return stringBuilder.toString();

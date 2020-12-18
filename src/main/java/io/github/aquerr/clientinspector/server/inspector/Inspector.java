@@ -1,6 +1,6 @@
 package io.github.aquerr.clientinspector.server.inspector;
 
-import io.github.aquerr.clientinspector.server.config.Config;
+import io.github.aquerr.clientinspector.server.config.Configuration;
 import io.github.aquerr.clientinspector.server.log.LogHandler;
 import io.github.aquerr.clientinspector.server.util.ForgePlayerUtil;
 import net.minecraft.command.ICommandManager;
@@ -29,12 +29,12 @@ public class Inspector
         return INSTANCE;
     }
 
-    private final Config config;
+    private final Configuration configuration;
     private final LogHandler logHandler;
 
     private Inspector()
     {
-        this.config = Config.getInstance();
+        this.configuration = Configuration.getInstance();
         this.logHandler = LogHandler.getInstance();
     }
 
@@ -53,7 +53,7 @@ public class Inspector
     {
         LOGGER.info("Inspecting player " + player);
 
-        final Set<String> modsNamesToDetect = this.config.getModsToDetect();
+        final Set<String> modsNamesToDetect = this.configuration.getModsToDetect();
         final Set<String> detectedModsNames = new HashSet<>();
         for (final String playerModName : mods)
         {
@@ -81,7 +81,7 @@ public class Inspector
                     e.printStackTrace();
                 }
             });
-            executeCommandsOnPlayer(player, this.config.getCommandsToRun());
+            executeCommandsOnPlayer(player, this.configuration.getCommandsToRun());
         }
     }
 
