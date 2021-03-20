@@ -61,6 +61,8 @@ public class ModListPacket implements IMessage
 
             entityPlayer.getServerWorld().addScheduledTask(() -> Inspector.getInstance().inspectWithMods(entityPlayer, modEntries));
 
+            ServerPacketAwaiter.LAST_PACKETS_FROM_PLAYERS.put(entityPlayer.getUniqueID(), ModListPacket.class);
+
             return null;
         }
     }

@@ -72,4 +72,33 @@ public class LogHandler
                 .append("\n");
         return stringBuilder.toString();
     }
+
+    public void logPlayerNoModsListResponsePacket(EntityPlayerMP player)
+    {
+        final String message = "Did not receive response mod list packet from '" + player.getName() + "'";
+        LOGGER.info(message);
+
+        //We create log files per day.
+        final Path logFilePath = this.logsDirPath.resolve("inspection-" + LocalDate.now().toString() + ".log");
+        if (Files.notExists(logFilePath))
+        {
+            try
+            {
+                Files.createFile(logFilePath);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        try
+        {
+            Files.write(logFilePath, message.getBytes(), StandardOpenOption.APPEND);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

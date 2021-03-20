@@ -1,7 +1,9 @@
 package io.github.aquerr.clientinspector.server.listener;
 
 import io.github.aquerr.clientinspector.server.packet.ClientInspectorPacketRegistry;
+import io.github.aquerr.clientinspector.server.packet.ModListPacket;
 import io.github.aquerr.clientinspector.server.packet.RequestModListPacket;
+import io.github.aquerr.clientinspector.server.packet.ServerPacketAwaiter;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -18,5 +20,6 @@ public class PlayerConnectListener
         // Request request mod-list packet to the client.
         LOGGER.info("Sending mod-list request to client...");
         ClientInspectorPacketRegistry.INSTANCE.sendTo(new RequestModListPacket(), (EntityPlayerMP) event.player);
+        ServerPacketAwaiter.getInstance().awaitForPacketFromPlayer((EntityPlayerMP) event.player, ModListPacket.class, 10);
     }
 }

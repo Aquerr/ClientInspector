@@ -4,6 +4,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
 import io.github.aquerr.clientinspector.ClientInspector;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -55,6 +56,20 @@ public class Configuration
 
     public void reload()
     {
+        if(Files.notExists(configFilePath))
+        {
+            try
+            {
+                final String resource = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("assets/" + ClientInspector.ID + "/config.conf"), StandardCharsets.UTF_8);
+                Files.write(configFilePath, resource.getBytes(StandardCharsets.UTF_8));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+
         final Config configResource = ConfigFactory.parseResourcesAnySyntax("assets/" + ClientInspector.ID + "/config.conf");
         this.config = ConfigFactory.parseFile(configFilePath.toFile()).withFallback(configResource);
 
@@ -64,7 +79,7 @@ public class Configuration
 
     private void save()
     {
-        final String configString = this.config.root().render(ConfigRenderOptions.defaults().setJson(false).setComments(true).setOriginComments(false));
+        final String configString = this.config.root().render(ConfigRenderOptions.defaults().setJson(false).setComments(true).setOriginComments(false).setFormatted(true));
         try
         {
             Files.write(configFilePath, configString.getBytes(StandardCharsets.UTF_8));

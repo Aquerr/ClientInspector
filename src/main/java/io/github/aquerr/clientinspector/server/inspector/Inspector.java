@@ -38,12 +38,6 @@ public class Inspector
         this.logHandler = LogHandler.getInstance();
     }
 
-    public void forgeInspect(final EntityPlayerMP player)
-    {
-        final Set<String> playerModsNames = ForgePlayerUtil.getPlayerMods(player);
-        inspect(player, playerModsNames);
-    }
-
     public void inspectWithMods(final EntityPlayerMP player, final Collection<String> mods)
     {
         inspect(player, mods);
