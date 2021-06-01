@@ -1,0 +1,16 @@
+[
+{
+  "modid": "clientinspector",
+  "name": "client Inspector",
+  "description": "A mod that inspects connecting players data and executes specified commands on them",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/Aquerr/ClientInspector",
+  "updateUrl": "",
+  "authorList": ["Aquerr"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
