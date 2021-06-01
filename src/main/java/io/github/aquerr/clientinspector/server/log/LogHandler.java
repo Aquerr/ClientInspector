@@ -43,13 +43,7 @@ public class LogHandler
     public void logPlayerWithMods(final EntityPlayerMP player, final Set<String> detectedModsNames) throws IOException
     {
         LOGGER.info("Logging player '" + player.getName() + "' with mods " + Arrays.toString(detectedModsNames.toArray()));
-
-        //We create log files per day.
-        final Path logFilePath = this.logsDirPath.resolve("inspection-" + LocalDate.now().toString() + ".log");
-        if (Files.notExists(logFilePath))
-            Files.createFile(logFilePath);
-
-        Files.write(logFilePath, buildLogMessage(player, detectedModsNames).getBytes(), StandardOpenOption.APPEND);
+        logMessage(buildLogMessage(player, detectedModsNames));
     }
 
     private String buildLogMessage(final EntityPlayerMP player, final Set<String> detectedModsNames)
@@ -62,7 +56,7 @@ public class LogHandler
                 .append("[name=")
                 .append(player.getName())
                 .append(", uuid=")
-                .append(player.getUniqueID().toString())
+                .append(player.getUniqueID())
                 .append("]")
                 .append(" connected from '")
                 .append(player.getPlayerIP())
@@ -73,32 +67,19 @@ public class LogHandler
         return stringBuilder.toString();
     }
 
-    public void logPlayerNoModsListResponsePacket(EntityPlayerMP player)
+    public void logPlayerNoModsListResponsePacket(EntityPlayerMP player) throws IOException
     {
         final String message = "Did not receive response mod list packet from '" + player.getName() + "'";
         LOGGER.info(message);
+        logMessage(message);
+    }
 
-        //We create log files per day.
-        final Path logFilePath = this.logsDirPath.resolve("inspection-" + LocalDate.now().toString() + ".log");
+    private void logMessage(final String message) throws IOException
+    {
+        final Path logFilePath = this.logsDirPath.resolve("inspection-" + LocalDate.now() + ".log");
         if (Files.notExists(logFilePath))
-        {
-            try
-            {
-                Files.createFile(logFilePath);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
+            Files.createFile(logFilePath);
 
-        try
-        {
-            Files.write(logFilePath, message.getBytes(), StandardOpenOption.APPEND);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        Files.write(logFilePath, message.getBytes(), StandardOpenOption.APPEND);
     }
 }

@@ -21,6 +21,7 @@ public class Configuration
 
     private static Configuration INSTANCE;
 
+    private List<String> commandsToRunIfModListNotReceived;
     private List<String> commandsToRun;
     private Set<String> modsToDetect;
     private Config config;
@@ -44,6 +45,11 @@ public class Configuration
         save();
     }
 
+    public List<String> getCommandsToRunIfModListNotReceived()
+    {
+        return commandsToRunIfModListNotReceived;
+    }
+
     public List<String> getCommandsToRun()
     {
         return commandsToRun;
@@ -54,7 +60,7 @@ public class Configuration
         return modsToDetect;
     }
 
-    public void reload()
+    private void reload()
     {
         if(Files.notExists(configFilePath))
         {
@@ -75,6 +81,7 @@ public class Configuration
 
         this.commandsToRun = this.config.getStringList("commands-to-run");
         this.modsToDetect = new HashSet<>(this.config.getStringList("mods-to-detect"));
+        this.commandsToRunIfModListNotReceived = this.config.getStringList("commands-to-run-when-modlist-not-received");
     }
 
     private void save()

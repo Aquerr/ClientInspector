@@ -54,14 +54,12 @@ public class ModListPacket implements IMessage
         @Override
         public IMessage onMessage(ModListPacket message, MessageContext ctx)
         {
-            LOGGER.info("Received mod-list packet from client.");
-
+            LOGGER.info("Received mod-list packet from ClientInspector located on the client side.");
             final List<String> modEntries = message.modEntries;
             final EntityPlayerMP entityPlayer = ctx.getServerHandler().player;
+            ServerPacketAwaiter.LAST_PACKETS_FROM_PLAYERS.put(entityPlayer.getUniqueID(), ModListPacket.class);
 
             entityPlayer.getServerWorld().addScheduledTask(() -> Inspector.getInstance().inspectWithMods(entityPlayer, modEntries));
-
-            ServerPacketAwaiter.LAST_PACKETS_FROM_PLAYERS.put(entityPlayer.getUniqueID(), ModListPacket.class);
 
             return null;
         }

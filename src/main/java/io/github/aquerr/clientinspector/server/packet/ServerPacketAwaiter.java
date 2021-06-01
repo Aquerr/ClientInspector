@@ -1,22 +1,20 @@
 package io.github.aquerr.clientinspector.server.packet;
 
 import io.github.aquerr.clientinspector.server.inspector.Inspector;
-import io.github.aquerr.clientinspector.server.log.LogHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 
 public class ServerPacketAwaiter
 {
     public static final Map<UUID, Class<?>> LAST_PACKETS_FROM_PLAYERS = new HashMap<>();
     private static final ServerPacketAwaiter INSTANCE = new ServerPacketAwaiter();
-
-    private static final ScheduledExecutorService scheduledExectorService = Executors.newSingleThreadScheduledExecutor();
+    private static final Inspector INSPECTOR = Inspector.getInstance();
 
     public static ServerPacketAwaiter getInstance()
     {
@@ -30,23 +28,6 @@ public class ServerPacketAwaiter
 
     public void awaitForPacketFromPlayer(final EntityPlayerMP player, final Class<? extends IMessage> packetClass, int secondsToWait)
     {
-//        final ScheduledFuture<?> scheduledFuture = scheduledExectorService.scheduleAtFixedRate(new Runnable()
-//        {
-//            int seconds = 0;
-//
-//            @Override
-//            public void run()
-//            {
-//                if (seconds >= secondsToWait)
-//                    return;
-//
-//                if (LAST_PACKETS_FROM_PLAYERS.containsKey())
-//
-//
-//                seconds++;
-//            }
-//        }, 0, 1, TimeUnit.SECONDS);
-
         ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
         forkJoinPool.submit(new PacketAwaitTask(player, packetClass, secondsToWait));
     }
@@ -84,10 +65,7 @@ public class ServerPacketAwaiter
             }
             else
             {
-                entityPlayerMP.getServerWorld().addScheduledTask(() -> LogHandler.getInstance().logPlayerNoModsListResponsePacket(entityPlayerMP));
-
-                //TODO: Let the server owner decide
-//                entityPlayerMP.getServerWorld().addScheduledTask(() -> entityPlayerMP.connection.disconnect(new TextComponentString("")));
+                INSPECTOR.noModListPacketReceived(entityPlayerMP);
             }
         }
     }

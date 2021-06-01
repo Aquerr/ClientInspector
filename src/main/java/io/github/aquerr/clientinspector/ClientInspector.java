@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = ClientInspector.ID, name = ClientInspector.NAME, version = ClientInspector.VERSION, acceptedMinecraftVersions = "1.12.2")
+@Mod(modid = ClientInspector.ID, name = ClientInspector.NAME, version = ClientInspector.VERSION, acceptedMinecraftVersions = "1.12.2", acceptableRemoteVersions = "*")
 public class ClientInspector
 {
     public static final String ID = "clientinspector",

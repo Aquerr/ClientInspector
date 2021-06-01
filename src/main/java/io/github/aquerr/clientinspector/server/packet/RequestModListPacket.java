@@ -2,7 +2,6 @@ package io.github.aquerr.clientinspector.server.packet;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.discovery.ContainerType;
 import net.minecraftforge.fml.common.discovery.ModCandidate;
@@ -41,7 +40,6 @@ public class RequestModListPacket implements IMessage
         public ModListPacket onMessage(RequestModListPacket message, MessageContext ctx)
         {
             LOGGER.info("Sending mod-list packet to the server...");
-
             ModDiscoverer modDiscoverer = new ModDiscoverer();
 
             // Thanks to forge team for making this utility static method :D
@@ -52,13 +50,7 @@ public class RequestModListPacket implements IMessage
             }
 
             List<ModContainer> testMods = modDiscoverer.identifyMods();
-
             LOGGER.info("Found mod-list: " + Arrays.toString(testMods.toArray()));
-
-//            Minecraft.getMinecraft().addScheduledTask(() -> {
-//                ClientInspectorPacketRegistry.INSTANCE.sendToServer(new ModListPacket(testMods.stream().map(ModContainer::getModId).collect(Collectors.toList())));
-//            });
-
             return new ModListPacket(testMods.stream().map(ModContainer::getModId).collect(Collectors.toList()));
         }
     }
