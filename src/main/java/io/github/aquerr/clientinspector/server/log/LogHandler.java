@@ -1,7 +1,8 @@
 package io.github.aquerr.clientinspector.server.log;
 
 import io.github.aquerr.clientinspector.ClientInspector;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,13 +41,13 @@ public class LogHandler
         }
     }
 
-    public void logPlayerWithMods(final EntityPlayerMP player, final Set<String> detectedModsNames) throws IOException
+    public void logPlayerWithMods(final ServerPlayerEntity player, final Set<String> detectedModsNames) throws IOException
     {
         LOGGER.info("Logging player '" + player.getName() + "' with mods " + Arrays.toString(detectedModsNames.toArray()));
         logMessage(buildLogMessage(player, detectedModsNames));
     }
 
-    private String buildLogMessage(final EntityPlayerMP player, final Set<String> detectedModsNames)
+    private String buildLogMessage(final ServerPlayerEntity player, final Set<String> detectedModsNames)
     {
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[")
@@ -67,7 +68,7 @@ public class LogHandler
         return stringBuilder.toString();
     }
 
-    public void logPlayerNoModsListResponsePacket(EntityPlayerMP player) throws IOException
+    public void logPlayerNoModsListResponsePacket(PlayerEntity player) throws IOException
     {
         final String message = "Did not receive response mod list packet from '" + player.getName() + "'";
         LOGGER.info(message);

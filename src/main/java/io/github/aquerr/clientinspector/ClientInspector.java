@@ -1,61 +1,47 @@
 package io.github.aquerr.clientinspector;
 
+import io.github.aquerr.clientinspector.server.ServerProxy;
+import io.github.aquerr.clientinspector.server.config.Configuration;
 import io.github.aquerr.clientinspector.server.packet.ClientInspectorPacketRegistry;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = ClientInspector.ID, name = ClientInspector.NAME, version = ClientInspector.VERSION, acceptedMinecraftVersions = "1.12.2", acceptableRemoteVersions = "*")
+@Mod(ClientInspector.ID)
 public class ClientInspector
 {
-    public static final String ID = "clientinspector",
-            NAME = "Client Inspector",
-            VERSION = "1.1.0";
+    public static final String ID = "clientinspector";
 
-    @SidedProxy(clientSide = "io.github.aquerr.clientinspector.client.ClientProxy", serverSide = "io.github.aquerr.clientinspector.server.ServerProxy", modId = ClientInspector.ID)
-    public static Proxy PROXY;
+    private static final Logger LOGGER = LogManager.getLogger();
 
-    @Mod.Instance(ClientInspector.ID)
-    private static ClientInspector INSTANCE;
-
-    public static ClientInspector getInstance()
+    public ClientInspector()
     {
-        return INSTANCE;
+
+        // Register the setup method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
     }
 
-    private Logger logger;
-
-    @Mod.EventHandler
-    public void onPreInit(FMLPreInitializationEvent event)
+    private void setup(final FMLCommonSetupEvent event)
     {
-        INSTANCE = this;
-        this.logger = event.getModLog();
-        PROXY.preInit(event);
-    }
+        LOGGER.info("Initializing " + ID);
 
-    @Mod.EventHandler
-    public void onInit(FMLInitializationEvent event)
-    {
-        PROXY.init(event);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Configuration.SERVER_SPEC);
 
-        this.logger.info("Initializing " + NAME);
-
+        ServerProxy.init();
         ClientInspectorPacketRegistry.registerPackets();
 
-        this.logger.info("Mod load completed!");
+        LOGGER.info("Mod load completed!");
     }
 
-    @Mod.EventHandler
-    public void onPostInit(FMLPostInitializationEvent event)
+    private void doClientStuff(final FMLClientSetupEvent event)
     {
-        PROXY.postInit(event);
-    }
 
-    public Logger getLogger()
-    {
-        return logger;
     }
 }

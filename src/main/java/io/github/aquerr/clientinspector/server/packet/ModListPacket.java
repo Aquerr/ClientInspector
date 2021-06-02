@@ -1,21 +1,21 @@
 package io.github.aquerr.clientinspector.server.packet;
 
 import io.github.aquerr.clientinspector.server.inspector.Inspector;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
-public class ModListPacket implements IMessage
+public class ModListPacket implements ClientInspectorPacket
 {
-    private List<String> modEntries;
+    private static final Logger LOGGER = LogManager.getLogger(ModListPacket.class);
+
+    private final List<String> modEntries;
 
     public ModListPacket()
     {
@@ -27,41 +27,41 @@ public class ModListPacket implements IMessage
         this.modEntries = modEntries;
     }
 
-    @Override
-    public void toBytes(ByteBuf buffer)
+    public List<String> getModEntries()
     {
-        ByteBufUtils.writeVarInt(buffer, this.modEntries.size(), 2);
-        for (String modName: this.modEntries)
-        {
-            ByteBufUtils.writeUTF8String(buffer, modName);
-        }
+        return modEntries;
     }
 
-    @Override
-    public void fromBytes(ByteBuf buffer)
+    public static PacketBuffer toBytes(ModListPacket modListPacket, PacketBuffer buffer)
     {
-        int modCount = ByteBufUtils.readVarInt(buffer, 2);
+        buffer.writeVarInt(modListPacket.getModEntries().size());
+        for (String modName: modListPacket.getModEntries())
+        {
+            buffer.writeString(modName);
+        }
+        return buffer;
+    }
+
+    public static ModListPacket fromBytes(PacketBuffer buffer)
+    {
+        List<String> modEntries = new LinkedList<>();
+
+        int modCount = buffer.readVarInt();
         for (int i = 0; i < modCount; i++)
         {
-            this.modEntries.add(ByteBufUtils.readUTF8String(buffer));
+            modEntries.add(buffer.readString());
         }
+
+        return new ModListPacket(modEntries);
     }
 
-    public static class ModListPacketHandler implements IMessageHandler<ModListPacket, IMessage>
+    public static void handlePacket(ModListPacket modListPacket, Supplier<NetworkEvent.Context> contextSupplier)
     {
-        private static final Logger LOGGER = LogManager.getLogger(ModListPacketHandler.class);
+        LOGGER.info("Received mod-list packet from ClientInspector located on the client side.");
+        final List<String> modEntries = modListPacket.getModEntries();
+        final ServerPlayerEntity entityPlayer = contextSupplier.get().getSender();
+        ServerPacketAwaiter.LAST_PACKETS_FROM_PLAYERS.put(entityPlayer.getUniqueID(), ModListPacket.class);
 
-        @Override
-        public IMessage onMessage(ModListPacket message, MessageContext ctx)
-        {
-            LOGGER.info("Received mod-list packet from ClientInspector located on the client side.");
-            final List<String> modEntries = message.modEntries;
-            final EntityPlayerMP entityPlayer = ctx.getServerHandler().player;
-            ServerPacketAwaiter.LAST_PACKETS_FROM_PLAYERS.put(entityPlayer.getUniqueID(), ModListPacket.class);
-
-            entityPlayer.getServerWorld().addScheduledTask(() -> Inspector.getInstance().inspectWithMods(entityPlayer, modEntries));
-
-            return null;
-        }
+        entityPlayer.getServer().deferTask(() -> Inspector.getInstance().inspectWithMods(entityPlayer, modEntries));
     }
 }

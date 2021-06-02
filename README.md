@@ -5,7 +5,7 @@
 [![Discord](https://img.shields.io/discord/447076657698963466.svg?color=blue&label=Discord&logo=Discord&logoColor=white)](https://discord.gg/Zg3rWta)
 
 ## General
-Client Inspector is a plugin for SpongeForge that allows you to execute commands on a player 
+Client Inspector is a Forge mod that allows you to execute commands on a player 
 who connects to the server with disallowed mods. It also logs information about such events in its own log file.
 
 Check the [Wiki](https://github.com/Aquerr/ClientInspector/wiki) to get to know how everything works.
@@ -21,6 +21,7 @@ Check the [Wiki](https://github.com/Aquerr/ClientInspector/wiki) to get to know 
 * [Download Links](https://github.com/Aquerr/ClientInspector/releases)
 * [Wiki](https://github.com/Aquerr/ClientInspector/wiki)
 * [Ore](https://ore.spongepowered.org/Niebek/Client-Inspector)
+* [Curseforge]() SOON
 * [Discord](https://discord.gg/Zg3rWta)
 
 ## Credits / Thanks

@@ -1,9 +1,7 @@
 package io.github.aquerr.clientinspector.server.config;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigRenderOptions;
 import io.github.aquerr.clientinspector.ClientInspector;
+import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -21,15 +19,16 @@ public class Configuration
 
     private static Configuration INSTANCE;
 
-    private List<String> commandsToRunIfModListNotReceived;
-    private List<String> commandsToRun;
-    private Set<String> modsToDetect;
-    private Config config;
-
     public static Configuration getInstance()
     {
         return INSTANCE;
     }
+
+    private ForgeConfigSpec.ConfigValue<List<String>> commandsToRunIfModListNotReceived;
+    private ForgeConfigSpec.ConfigValue<List<String>> commandsToRun;
+    private ForgeConfigSpec.ConfigValue<Set<String>> modsToDetect;
+
+    public static final ForgeConfigSpec SERVER_SPEC =;
 
     public static void init()
     {
@@ -47,17 +46,17 @@ public class Configuration
 
     public List<String> getCommandsToRunIfModListNotReceived()
     {
-        return commandsToRunIfModListNotReceived;
+        return commandsToRunIfModListNotReceived.get();
     }
 
     public List<String> getCommandsToRun()
     {
-        return commandsToRun;
+        return commandsToRun.get();
     }
 
     public Set<String> getModsToDetect()
     {
-        return modsToDetect;
+        return modsToDetect.get();
     }
 
     private void reload()

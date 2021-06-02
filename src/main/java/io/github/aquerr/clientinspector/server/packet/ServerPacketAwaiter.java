@@ -1,8 +1,7 @@
 package io.github.aquerr.clientinspector.server.packet;
 
 import io.github.aquerr.clientinspector.server.inspector.Inspector;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraft.entity.player.ServerPlayerEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ServerPacketAwaiter
 {
-    public static final Map<UUID, Class<?>> LAST_PACKETS_FROM_PLAYERS = new HashMap<>();
+    public static final Map<UUID, Class<? extends ClientInspectorPacket>> LAST_PACKETS_FROM_PLAYERS = new HashMap<>();
     private static final ServerPacketAwaiter INSTANCE = new ServerPacketAwaiter();
     private static final Inspector INSPECTOR = Inspector.getInstance();
 
@@ -26,7 +25,7 @@ public class ServerPacketAwaiter
 
     }
 
-    public void awaitForPacketFromPlayer(final EntityPlayerMP player, final Class<? extends IMessage> packetClass, int secondsToWait)
+    public void awaitForPacketFromPlayer(final ServerPlayerEntity player, final Class<? extends ClientInspectorPacket> packetClass, int secondsToWait)
     {
         ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
         forkJoinPool.submit(new PacketAwaitTask(player, packetClass, secondsToWait));
@@ -34,11 +33,11 @@ public class ServerPacketAwaiter
 
     public static class PacketAwaitTask extends Thread
     {
-        private final EntityPlayerMP entityPlayerMP;
-        private final Class<? extends IMessage> packetClass;
+        private final ServerPlayerEntity entityPlayerMP;
+        private final Class<? extends ClientInspectorPacket> packetClass;
         private final int secondsToWait;
 
-        public PacketAwaitTask(final EntityPlayerMP entityPlayerMP, final Class<? extends IMessage> packetClass, int secondsToWait)
+        public PacketAwaitTask(final ServerPlayerEntity entityPlayerMP, final Class<? extends ClientInspectorPacket> packetClass, int secondsToWait)
         {
             this.entityPlayerMP = entityPlayerMP;
             this.packetClass = packetClass;
