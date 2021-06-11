@@ -68,15 +68,9 @@ public class LogHandler
         return stringBuilder.toString();
     }
 
-    public void logPlayerNoModsListResponsePacket(PlayerEntity player) throws IOException
+    public void logMessage(final String message) throws IOException
     {
-        final String message = "Did not receive response mod list packet from '" + player.getName() + "'";
         LOGGER.info(message);
-        logMessage(message);
-    }
-
-    private void logMessage(final String message) throws IOException
-    {
         final Path logFilePath = this.logsDirPath.resolve("inspection-" + LocalDate.now() + ".log");
         if (Files.notExists(logFilePath))
             Files.createFile(logFilePath);

@@ -1,12 +1,8 @@
 package io.github.aquerr.clientinspector;
 
 import io.github.aquerr.clientinspector.server.ServerProxy;
-import io.github.aquerr.clientinspector.server.config.Configuration;
 import io.github.aquerr.clientinspector.server.packet.ClientInspectorPacketRegistry;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -22,7 +18,6 @@ public class ClientInspector
 
     public ClientInspector()
     {
-
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
@@ -32,7 +27,7 @@ public class ClientInspector
     {
         LOGGER.info("Initializing " + ID);
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Configuration.SERVER_SPEC);
+//        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Configuration);
 
         ServerProxy.init();
         ClientInspectorPacketRegistry.registerPackets();

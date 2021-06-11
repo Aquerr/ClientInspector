@@ -22,7 +22,7 @@ public class ClientInspectorPacketRegistry
 
     public static void registerPackets()
     {
-        INSTANCE.registerMessage(MESSAGE_ID++, ModListPacket.class, ModListPacket::toBytes, ModListPacket::fromBytes, ModListPacket::handlePacket, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        INSTANCE.registerMessage(MESSAGE_ID++, RequestModListPacket.class, RequestModListPacket::toBytes, RequestModListPacket::fromBytes, RequestModListPacket::handlePacket, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        INSTANCE.registerMessage(MESSAGE_ID++, ModListPacket.class, ModListPacket::toBytes, ModListPacket::fromBytes, ModListPacket::handlePacket, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        INSTANCE.registerMessage(MESSAGE_ID++, RequestModListPacket.class, RequestModListPacket::toBytes, RequestModListPacket::fromBytes, RequestModListPacket::handlePacket, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 }

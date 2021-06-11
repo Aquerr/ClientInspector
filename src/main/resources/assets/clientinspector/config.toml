@@ -3,20 +3,20 @@
 # Set of commands that should be run against the player when 'requested modlist' is not received.
 # ClientInspector normally sends a modlist request to the ClientInspector located on the client side.0
 # If ClientInspector is not installed on the client side then it will execute the commands below, try to extract mods from forge connection and
-# execute the commands from 'commands-to-run' if it finds any mod that should be detected
-# E.g. commands-to-run-when-modlist-not-received=["kick %PLAYER% ClientInspector not installed on the client side"]
-commands-to-run-when-modlist-not-received=[]
+# execute the commands from 'commands_to_run' if it finds any mod that should be detected
+# E.g. commands_to_run_when_modlist_not_received=["kick %PLAYER% ClientInspector not installed on the client side"]
+commands_to_run_when_modlist_not_received = []
 
 # Set of commands that should be run against the player after detecing a mod from the above list.
 # Use %PLAYER% placeholder to target the player. This placeholder will be replaced with the actual player by the plugin.
 # Note: Don't put the slash "/" in front of the command.
-# E.g. commands-to-run=["ban %PLAYER%", "jail %PLAYER% specialjail"]
-commands-to-run=[]
+# E.g. commands_to_run=["ban %PLAYER%", "jail %PLAYER% specialjail"]
+commands_to_run = []
 
 # Mods that plugin should search for in the connecting player's mod-list.
 # Regex is supported and it preforms checks case-insensitive.
 # E.g. Pattern ".*XRay.*" will match all mods names with word "xray".
-# E.g. mods-to-detect=["forge", "xray", ".*xray.*", ".*cheats.*"]
-mods-to-detect=[
+# E.g. mods_to_detect=["forge", "xray", ".*xray.*", ".*cheats.*"]
+mods_to_detect = [
     ".*xray.*"
 ]

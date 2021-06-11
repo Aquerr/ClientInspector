@@ -1,21 +1,20 @@
 package io.github.aquerr.clientinspector.server.config;
 
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.google.common.io.Resources;
 import io.github.aquerr.clientinspector.ClientInspector;
-import net.minecraftforge.common.ForgeConfigSpec;
-import org.apache.commons.io.IOUtils;
+import net.minecraftforge.fml.loading.FMLPaths;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Configuration
 {
-    private static final Path configFilePath = Paths.get("config/" + ClientInspector.ID + ".conf");
+    private static final Path configFilePath = FMLPaths.CONFIGDIR.get().resolve(ClientInspector.ID).resolve("config.toml");
 
     private static Configuration INSTANCE;
 
@@ -24,11 +23,9 @@ public class Configuration
         return INSTANCE;
     }
 
-    private ForgeConfigSpec.ConfigValue<List<String>> commandsToRunIfModListNotReceived;
-    private ForgeConfigSpec.ConfigValue<List<String>> commandsToRun;
-    private ForgeConfigSpec.ConfigValue<Set<String>> modsToDetect;
-
-    public static final ForgeConfigSpec SERVER_SPEC =;
+    private List<String> commandsToRunIfModListNotReceived;
+    private List<String> commandsToRun;
+    private Set<String> modsToDetect;
 
     public static void init()
     {
@@ -40,33 +37,31 @@ public class Configuration
 
     private Configuration()
     {
-        reload();
-        save();
+        load();
     }
 
     public List<String> getCommandsToRunIfModListNotReceived()
     {
-        return commandsToRunIfModListNotReceived.get();
+        return commandsToRunIfModListNotReceived;
     }
 
     public List<String> getCommandsToRun()
     {
-        return commandsToRun.get();
+        return commandsToRun;
     }
 
     public Set<String> getModsToDetect()
     {
-        return modsToDetect.get();
+        return modsToDetect;
     }
 
-    private void reload()
+    private void load()
     {
-        if(Files.notExists(configFilePath))
+        if (Files.notExists(configFilePath))
         {
             try
             {
-                final String resource = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("assets/" + ClientInspector.ID + "/config.conf"), StandardCharsets.UTF_8);
-                Files.write(configFilePath, resource.getBytes(StandardCharsets.UTF_8));
+                FileUtils.copyFile(new File(Resources.getResource("assets/" + ClientInspector.ID + "/config.toml").getFile()), configFilePath.toFile());
             }
             catch (IOException e)
             {
@@ -74,25 +69,13 @@ public class Configuration
             }
         }
 
+        CommentedFileConfig config = CommentedFileConfig.of(configFilePath);
+        config.load();
 
-        final Config configResource = ConfigFactory.parseResourcesAnySyntax("assets/" + ClientInspector.ID + "/config.conf");
-        this.config = ConfigFactory.parseFile(configFilePath.toFile()).withFallback(configResource);
+        this.commandsToRun = config.get("commands_to_run");
+        this.modsToDetect = new HashSet<>(config.<ArrayList<String>>get("mods_to_detect"));
+        this.commandsToRunIfModListNotReceived = config.get("commands_to_run_when_modlist_not_received");
 
-        this.commandsToRun = this.config.getStringList("commands-to-run");
-        this.modsToDetect = new HashSet<>(this.config.getStringList("mods-to-detect"));
-        this.commandsToRunIfModListNotReceived = this.config.getStringList("commands-to-run-when-modlist-not-received");
-    }
-
-    private void save()
-    {
-        final String configString = this.config.root().render(ConfigRenderOptions.defaults().setJson(false).setComments(true).setOriginComments(false).setFormatted(true));
-        try
-        {
-            Files.write(configFilePath, configString.getBytes(StandardCharsets.UTF_8));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        config.close();
     }
 }

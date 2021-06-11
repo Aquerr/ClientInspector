@@ -62,7 +62,8 @@ public class Inspector
         {
             try
             {
-                LogHandler.getInstance().logPlayerNoModsListResponsePacket(entityPlayerMP);
+                final String message = "Did not receive response mod list packet from '" + entityPlayerMP.getName().getString() + "'";
+                LogHandler.getInstance().logMessage(message);
             }
             catch (IOException e)
             {
