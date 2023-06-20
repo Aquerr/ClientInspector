@@ -1,7 +1,7 @@
 package io.github.aquerr.clientinspector.server.packet;
 
 import io.github.aquerr.clientinspector.server.inspector.Inspector;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class ServerPacketAwaiter
 
     }
 
-    public void awaitForPacketFromPlayer(final ServerPlayerEntity player, final Class<? extends ClientInspectorPacket> packetClass, int secondsToWait)
+    public void awaitForPacketFromPlayer(final ServerPlayer player, final Class<? extends ClientInspectorPacket> packetClass, int secondsToWait)
     {
         ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
         forkJoinPool.submit(new PacketAwaitTask(player, packetClass, secondsToWait));
@@ -33,11 +33,11 @@ public class ServerPacketAwaiter
 
     public static class PacketAwaitTask extends Thread
     {
-        private final ServerPlayerEntity entityPlayerMP;
+        private final ServerPlayer entityPlayerMP;
         private final Class<? extends ClientInspectorPacket> packetClass;
         private final int secondsToWait;
 
-        public PacketAwaitTask(final ServerPlayerEntity entityPlayerMP, final Class<? extends ClientInspectorPacket> packetClass, int secondsToWait)
+        public PacketAwaitTask(final ServerPlayer entityPlayerMP, final Class<? extends ClientInspectorPacket> packetClass, int secondsToWait)
         {
             this.entityPlayerMP = entityPlayerMP;
             this.packetClass = packetClass;
@@ -57,9 +57,9 @@ public class ServerPacketAwaiter
                 e.printStackTrace();
             }
 
-            if (LAST_PACKETS_FROM_PLAYERS.containsKey(entityPlayerMP.getUniqueID()) && LAST_PACKETS_FROM_PLAYERS.get(entityPlayerMP.getUniqueID()).equals(packetClass))
+            if (LAST_PACKETS_FROM_PLAYERS.containsKey(entityPlayerMP.getUUID()) && LAST_PACKETS_FROM_PLAYERS.get(entityPlayerMP.getUUID()).equals(packetClass))
             {
-                LAST_PACKETS_FROM_PLAYERS.remove(entityPlayerMP.getUniqueID());
+                LAST_PACKETS_FROM_PLAYERS.remove(entityPlayerMP.getUUID());
                 return;
             }
             else

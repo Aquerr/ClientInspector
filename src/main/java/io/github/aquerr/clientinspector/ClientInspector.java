@@ -20,7 +20,6 @@ public class ClientInspector
     {
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
     }
 
     private void setup(final FMLCommonSetupEvent event)
@@ -33,10 +32,5 @@ public class ClientInspector
         ClientInspectorPacketRegistry.registerPackets();
 
         LOGGER.info("Mod load completed!");
-    }
-
-    private void doClientStuff(final FMLClientSetupEvent event)
-    {
-
     }
 }

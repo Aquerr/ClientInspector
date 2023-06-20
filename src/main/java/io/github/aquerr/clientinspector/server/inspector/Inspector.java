@@ -7,14 +7,14 @@ import io.github.aquerr.clientinspector.server.packet.ClientInspectorPacketRegis
 import io.github.aquerr.clientinspector.server.packet.ModListPacket;
 import io.github.aquerr.clientinspector.server.packet.RequestModListPacket;
 import io.github.aquerr.clientinspector.server.packet.ServerPacketAwaiter;
-import net.minecraft.command.Commands;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.ServerPlayNetHandler;
+import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.fml.network.FMLConnectionData;
-import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.server.TickTask;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraftforge.network.ConnectionData;
+import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,21 +44,21 @@ public class Inspector
         this.logHandler = LogHandler.getInstance();
     }
 
-    public void inspectWithMods(final ServerPlayerEntity player, final Collection<String> mods)
+    public void inspectWithMods(final ServerPlayer player, final Collection<String> mods)
     {
         inspect(player, mods);
     }
 
-    public void requestAndVerifyModListFromPlayer(ServerPlayerEntity player)
+    public void requestAndVerifyModListFromPlayer(ServerPlayer player)
     {
         LOGGER.info("Sending mod-list request to client...");
         ServerPacketAwaiter.getInstance().awaitForPacketFromPlayer(player, ModListPacket.class, 10);
         ClientInspectorPacketRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new RequestModListPacket());
     }
 
-    public void noModListPacketReceived(ServerPlayerEntity entityPlayerMP)
+    public void noModListPacketReceived(ServerPlayer entityPlayerMP)
     {
-        entityPlayerMP.getServer().deferTask(() ->
+        entityPlayerMP.getServer().doRunTask(new TickTask(10, () ->
         {
             try
             {
@@ -69,7 +69,7 @@ public class Inspector
             {
                 e.printStackTrace();
             }
-        });
+        }));
 
         executeCommandsOnPlayer(entityPlayerMP, this.configuration.getCommandsToRunIfModListNotReceived());
 
@@ -77,7 +77,7 @@ public class Inspector
         inspect(entityPlayerMP, getPlayerMods(entityPlayerMP));
     }
 
-    private void inspect(final ServerPlayerEntity player, final Collection<String> mods)
+    private void inspect(final ServerPlayer player, final Collection<String> mods)
     {
         LOGGER.info("Inspecting player " + player);
         LOGGER.info("Inspecting mods: " + Arrays.toString(mods.toArray()));
@@ -114,23 +114,22 @@ public class Inspector
         }
     }
 
-    private static void executeCommandsOnPlayer(ServerPlayerEntity player, List<String> commandsToRun)
+    private static void executeCommandsOnPlayer(ServerPlayer player, List<String> commandsToRun)
     {
         final MinecraftServer minecraftServer = player.getServer();
-        final Commands commandManager = minecraftServer.getCommandManager();
+        final Commands commandManager = minecraftServer.getCommands();
         for (final String command : commandsToRun)
         {
             //Execute commands as console
-            commandManager.handleCommand(minecraftServer.getCommandSource(), command.replaceAll(PLAYER_PLACEHOLDER, player.getName().getString()));
+            commandManager.performPrefixedCommand(minecraftServer.createCommandSourceStack(), command.replaceAll(PLAYER_PLACEHOLDER, player.getName().getString()));
         }
     }
 
-    private static Collection<String> getPlayerMods(final ServerPlayerEntity entityPlayerMP)
+    private static Collection<String> getPlayerMods(final ServerPlayer entityPlayerMP)
     {
-        ServerPlayNetHandler networkHandlerPlayServer = entityPlayerMP.connection;
-        NetworkManager networkManager = networkHandlerPlayServer.netManager;
-        FMLConnectionData fmlConnectionData = NetworkHooks.getConnectionData(networkManager);
-        ImmutableList<String> modList = fmlConnectionData.getModList();
+        ServerGamePacketListenerImpl networkHandlerPlayServer = entityPlayerMP.connection;
+        ConnectionData connectionData = NetworkHooks.getConnectionData(networkHandlerPlayServer.connection);
+        ImmutableList<String> modList = connectionData.getModList();
         return modList;
     }
 }

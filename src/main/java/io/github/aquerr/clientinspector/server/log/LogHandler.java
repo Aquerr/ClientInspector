@@ -1,8 +1,7 @@
 package io.github.aquerr.clientinspector.server.log;
 
 import io.github.aquerr.clientinspector.ClientInspector;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,13 +40,13 @@ public class LogHandler
         }
     }
 
-    public void logPlayerWithMods(final ServerPlayerEntity player, final Set<String> detectedModsNames) throws IOException
+    public void logPlayerWithMods(final ServerPlayer player, final Set<String> detectedModsNames) throws IOException
     {
         LOGGER.info("Logging player '" + player.getName() + "' with mods " + Arrays.toString(detectedModsNames.toArray()));
         logMessage(buildLogMessage(player, detectedModsNames));
     }
 
-    private String buildLogMessage(final ServerPlayerEntity player, final Set<String> detectedModsNames)
+    private String buildLogMessage(final ServerPlayer player, final Set<String> detectedModsNames)
     {
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[")
@@ -57,10 +56,10 @@ public class LogHandler
                 .append("[name=")
                 .append(player.getName())
                 .append(", uuid=")
-                .append(player.getUniqueID())
+                .append(player.getUUID())
                 .append("]")
                 .append(" connected from '")
-                .append(player.getPlayerIP())
+                .append(player.getIpAddress())
                 .append("'")
                 .append(" with detected mods ")
                 .append(Arrays.toString(detectedModsNames.toArray()))
