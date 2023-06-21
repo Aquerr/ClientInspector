@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'net.minecraftforge.gradle' version '5.1.+'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
 apply plugin: 'net.minecraftforge.gradle'
@@ -42,6 +42,11 @@ minecraft {
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
+    // This property allows configuring Gradle's ProcessResources task(s) to run on IDE output locations before launching the game.
+    // It is REQUIRED to be set to true for this template to function.
+    // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+    copyIdeResources = true
+
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
     runs {
@@ -61,7 +66,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                clientinspector {
+                "${clientInspectorId}" {
                     source sourceSets.main
                 }
             }
@@ -83,7 +88,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                clientinspector {
+                "${clientInspectorId}" {
                     source sourceSets.main
                 }
             }
@@ -108,7 +113,7 @@ minecraft {
             args '--mod', "${clientInspectorId}", '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                clientinspector {
+                "${clientInspectorId}" {
                     source sourceSets.main
                 }
             }
@@ -123,7 +128,7 @@ dependencies {
     // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft "net.minecraftforge:forge:${forgeVersion}"
+    minecraft "net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}"
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency
@@ -138,11 +143,32 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 }
 
+// This block of code expands all declared replace properties in the specified resource targets.
+// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
+// When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
+// See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+def resourceTargets = ['META-INF/mods.toml', 'pack.mcmeta']
+def replaceProperties = [
+        minecraft_version: minecraftVersion, minecraft_version_range: minecraftVersionRange,
+        forge_version: forgeVersion, forge_version_range: forgeVersionRange,
+        loader_version_range: loaderVersionRange,
+        mod_id: clientInspectorId, mod_name: clientInspectorName, mod_license: modLicense, mod_version: clientInspectorVersion,
+        mod_authors: modAuthors, mod_description: modDescription
+]
+processResources {
+    inputs.properties replaceProperties
+    replaceProperties.put 'project', project
+
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+}
+
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     if(System.getenv("JENKINS_HOME")) {
         version = version + "_" + System.getenv("BUILD_NUMBER")
-        println("File name => " + baseName)
+        println("File name => " + jar.name)
     }
 
     manifest {
