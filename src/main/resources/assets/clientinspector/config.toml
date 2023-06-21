@@ -1,13 +1,13 @@
-# Conifg file for ClientInspector v1.0.0
+# Conifg file for ClientInspector v2.0.0
 
-# Set of commands that should be run against the player when 'requested modlist' is not received.
-# ClientInspector normally sends a modlist request to the ClientInspector located on the client side.0
-# If ClientInspector is not installed on the client side then it will execute the commands below, try to extract mods from forge connection and
-# execute the commands from 'commands_to_run' if it finds any mod that should be detected
+# Set of commands that should be run against the player when 'mod list' is not received by the server.
+# ClientInspector normally sends a modlist request to the ClientInspector located on the client side and awaits a response for 10 seconds.
+# Use %PLAYER% placeholder to target the player. This placeholder will be replaced with the actual player by the plugin.
+# Note: Don't put the slash "/" in front of the command.
 # E.g. commands_to_run_when_modlist_not_received=["kick %PLAYER% ClientInspector not installed on the client side"]
 commands_to_run_when_modlist_not_received = []
 
-# Set of commands that should be run against the player after detecing a mod from the above list.
+# Set of commands that should be run against the player after detecing a mod from the 'mods_to_detect' list.
 # Use %PLAYER% placeholder to target the player. This placeholder will be replaced with the actual player by the plugin.
 # Note: Don't put the slash "/" in front of the command.
 # E.g. commands_to_run=["ban %PLAYER%", "jail %PLAYER% specialjail"]
