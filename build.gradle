@@ -194,7 +194,7 @@ tasks.create("publishBuildOnDiscord") {
             }
 
             exec {
-                commandLine("java", "-jar", "..\\jenkinsdiscordbot-1.0.jar", "ClientInspector", jarFiles[0], lastCommitDescription)
+                commandLine("java", "-jar", ".." + File.separator + "jenkinsdiscordbot-1.0.jar", "ClientInspector", jarFiles[0], lastCommitDescription)
             }
         }
     }
