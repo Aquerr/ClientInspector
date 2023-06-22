@@ -8,9 +8,12 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+
+import static java.lang.String.format;
 
 public class Configuration
 {
@@ -61,11 +64,14 @@ public class Configuration
         {
             try
             {
-                FileUtils.copyFile(new File(Resources.getResource("assets/" + ClientInspector.ID + "/config.toml").getFile()), configFilePath.toFile());
+                String configTemplateLocation = format("assets/%s/config.toml", ClientInspector.ID);
+                Files.createDirectories(configFilePath.getParent());
+                Files.createFile(configFilePath);
+                Resources.copy(Resources.getResource(configTemplateLocation).toURI().toURL(), Files.newOutputStream(configFilePath));
             }
-            catch (IOException e)
+            catch (IOException | URISyntaxException e)
             {
-                e.printStackTrace();
+                throw new IllegalStateException(e);
             }
         }
 
