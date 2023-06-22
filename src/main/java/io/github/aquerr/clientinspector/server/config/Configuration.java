@@ -4,9 +4,7 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.google.common.io.Resources;
 import io.github.aquerr.clientinspector.ClientInspector;
 import net.minecraftforge.fml.loading.FMLPaths;
-import org.apache.commons.io.FileUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
