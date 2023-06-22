@@ -9,7 +9,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.forgespi.locating.IModFile;
-import net.minecraftforge.userdev.ClasspathLocator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,12 +43,8 @@ public class RequestModListPacket implements ClientInspectorPacket
 
         ModsFolderLocator modsFolderLocator = new ModsFolderLocator();
         modsFolderLocator.initArguments(Collections.emptyMap());
-        ClasspathLocator classpathLocator = new ClasspathLocator();
-        classpathLocator.initArguments(Collections.emptyMap());
 
-        LinkedList<IModFile> modFiles = new LinkedList<>();
-        modFiles.addAll(modsFolderLocator.scanMods());
-        modFiles.addAll(classpathLocator.scanMods());
+        LinkedList<IModFile> modFiles = new LinkedList<>(modsFolderLocator.scanMods());
 
         BackgroundScanHandler scanHandler = modDiscoverer.discoverMods();
         modFiles.addAll(scanHandler.getLoadingModList().getModFiles().stream()
