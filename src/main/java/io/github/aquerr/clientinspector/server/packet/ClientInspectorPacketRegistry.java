@@ -8,21 +8,25 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.Optional;
 
-public class ClientInspectorPacketRegistry
+public final class ClientInspectorPacketRegistry
 {
     private static final String PROTOCOL_VERSION = "1";
-    private static int MESSAGE_ID = 1;
-
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(ClientInspector.ID, "main"),
             () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals
+            version -> version.equals(PROTOCOL_VERSION),
+            version -> version.equals(PROTOCOL_VERSION)
     );
+
+    private ClientInspectorPacketRegistry()
+    {
+
+    }
 
     public static void registerPackets()
     {
-        INSTANCE.registerMessage(MESSAGE_ID++, ModListPacket.class, ModListPacket::toBytes, ModListPacket::fromBytes, ModListPacket::handlePacket, Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        INSTANCE.registerMessage(MESSAGE_ID++, RequestModListPacket.class, RequestModListPacket::toBytes, RequestModListPacket::fromBytes, RequestModListPacket::handlePacket, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        int messageId = 0;
+        INSTANCE.registerMessage(++messageId, ModListPacket.class, ModListPacket::toBytes, ModListPacket::fromBytes, ModListPacket::handlePacket, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        INSTANCE.registerMessage(++messageId, RequestModListPacket.class, RequestModListPacket::toBytes, RequestModListPacket::fromBytes, RequestModListPacket::handlePacket, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 }

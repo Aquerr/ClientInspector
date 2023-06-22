@@ -2,7 +2,6 @@ package io.github.aquerr.clientinspector.server.packet;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.loading.moddiscovery.BackgroundScanHandler;
-import net.minecraftforge.fml.loading.moddiscovery.ClasspathLocator;
 import net.minecraftforge.fml.loading.moddiscovery.ModDiscoverer;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
@@ -15,14 +14,16 @@ import net.minecraftforge.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class RequestModListPacket implements ClientInspectorPacket
 {
@@ -45,15 +46,9 @@ public class RequestModListPacket implements ClientInspectorPacket
 
         ModsFolderLocator modsFolderLocator = new ModsFolderLocator();
         modsFolderLocator.initArguments(Collections.emptyMap());
-        ClasspathLocator classpathLocator = new ClasspathLocator();
-        classpathLocator.initArguments(Collections.emptyMap());
 
         LinkedList<IModFileInfo> modFiles = new LinkedList<>();
         modFiles.addAll(modsFolderLocator.scanMods().stream().map(IModLocator.ModFileOrException::file)
-                .map(IModFile::getModFileInfo)
-                .toList());
-        modFiles.addAll(classpathLocator.scanMods().stream()
-                .map(IModLocator.ModFileOrException::file)
                 .map(IModFile::getModFileInfo)
                 .toList());
 
@@ -72,17 +67,17 @@ public class RequestModListPacket implements ClientInspectorPacket
                     .toList());
         }
 
-        List<String> modIds = modFiles.stream()
+        Set<String> modIds = modFiles.stream()
                 .map(IModFileInfo::getMods)
                 .flatMap(Collection::stream)
                 .map(IModInfo::getModId)
-                .toList();
+                .collect(Collectors.toSet());
 
         if (LOGGER.isDebugEnabled())
         {
             LOGGER.debug("Found mod-list: {}", Arrays.toString(modIds.toArray()));
         }
-        ClientInspectorPacketRegistry.INSTANCE.sendToServer(new ModListPacket(modIds));
+        ClientInspectorPacketRegistry.INSTANCE.sendToServer(new ModListPacket(new ArrayList<>(modIds)));
     }
 
     private static Map<String, ?> prepareArguments()
