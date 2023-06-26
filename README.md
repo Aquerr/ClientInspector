@@ -14,6 +14,8 @@ Check the [Wiki](https://github.com/Aquerr/ClientInspector/wiki) to get to know 
 
 **If you find any issues while using **Client Inspector** or you want to share your thoughts on what could be added, post them at [Github](https://github.com/Aquerr/ClientInspector/issues)**
 
+**You can also make a PR with a new feature yourself, help is always appreciated!**
+
 **If you enjoy using Client Inspector, give this repo a star!**
 
 ## Links
@@ -21,7 +23,7 @@ Check the [Wiki](https://github.com/Aquerr/ClientInspector/wiki) to get to know 
 * [Download Links](https://github.com/Aquerr/ClientInspector/releases)
 * [Wiki](https://github.com/Aquerr/ClientInspector/wiki)
 * [Ore](https://ore.spongepowered.org/Niebek/Client-Inspector)
-* [Curseforge]() SOON
+* [Curseforge](https://legacy.curseforge.com/minecraft/mc-mods/client-inspector)
 * [Discord](https://discord.gg/Zg3rWta)
 
 ## Credits / Thanks
