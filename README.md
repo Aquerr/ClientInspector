@@ -23,7 +23,7 @@ Check the [Wiki](https://github.com/Aquerr/ClientInspector/wiki) to get to know 
 * [Download Links](https://github.com/Aquerr/ClientInspector/releases)
 * [Wiki](https://github.com/Aquerr/ClientInspector/wiki)
 * [Ore](https://ore.spongepowered.org/Niebek/Client-Inspector)
-* [Curseforge](https://legacy.curseforge.com/minecraft/mc-mods/client-inspector)
+* [Curseforge](https://www.curseforge.com/minecraft/mc-mods/client-inspector)
 * [Discord](https://discord.gg/Zg3rWta)
 
 ## Credits / Thanks
