@@ -64,7 +64,7 @@ public class ServerPacketAwaiter
             }
             else
             {
-                INSPECTOR.noModListPacketReceived(entityPlayerMP);
+                INSPECTOR.handleNoModListPacketReceived(entityPlayerMP);
             }
         }
     }
