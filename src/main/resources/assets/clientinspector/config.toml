@@ -1,4 +1,4 @@
-# Config file for ClientInspector v2.0.0
+# Config file for ClientInspector v2.0.1
 
 # Set of commands that should be run against the player when 'mod list' is not received by the server.
 # ClientInspector normally sends a modlist request to the ClientInspector located on the client side and awaits a response for 10 seconds.
