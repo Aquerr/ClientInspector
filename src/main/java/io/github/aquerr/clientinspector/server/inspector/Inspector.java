@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
-public class Inspector
+public final class Inspector
 {
     private static final Logger LOGGER = LogManager.getLogger(Inspector.class);
     private static final String PLAYER_PLACEHOLDER = "%PLAYER%";
@@ -56,7 +56,7 @@ public class Inspector
         ClientInspectorPacketRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new RequestModListPacket());
     }
 
-    public void noModListPacketReceived(ServerPlayer entityPlayerMP)
+    public void handleNoModListPacketReceived(ServerPlayer entityPlayerMP)
     {
         entityPlayerMP.getServer().doRunTask(new TickTask(10, () ->
         {
@@ -117,12 +117,14 @@ public class Inspector
     private static void executeCommandsOnPlayer(ServerPlayer player, List<String> commandsToRun)
     {
         final MinecraftServer minecraftServer = player.getServer();
-        final Commands commandManager = minecraftServer.getCommands();
-        for (final String command : commandsToRun)
-        {
-            //Execute commands as console
-            commandManager.performPrefixedCommand(minecraftServer.createCommandSourceStack(), command.replaceAll(PLAYER_PLACEHOLDER, player.getName().getString()));
-        }
+        minecraftServer.doRunTask(new TickTask(10, () -> {
+            final Commands commandManager = minecraftServer.getCommands();
+            for (final String command : commandsToRun)
+            {
+                //Execute commands as console
+                commandManager.performPrefixedCommand(minecraftServer.createCommandSourceStack(), command.replaceAll(PLAYER_PLACEHOLDER, player.getName().getString()));
+            }
+        }));
     }
 
     private static Collection<String> getPlayerMods(final ServerPlayer entityPlayerMP)
