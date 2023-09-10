@@ -77,7 +77,7 @@ public class RequestModListPacket implements ClientInspectorPacket
         {
             LOGGER.debug("Found mod-list: {}", Arrays.toString(modIds.toArray()));
         }
-        ClientInspectorPacketRegistry.INSTANCE.sendToServer(new ModListPacket(new ArrayList<>(modIds)));
+        ClientInspectorPacketRegistry.INSTANCE.sendToServer(new ModListPacketResponse(new ArrayList<>(modIds)));
     }
 
     private static Map<String, ?> prepareArguments()

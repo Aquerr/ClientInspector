@@ -1,11 +1,16 @@
-# Conifg file for ClientInspector v2.0.1
+# Conifg file for ClientInspector v2.0.2
 
 # Set of commands that should be run against the player when 'mod list' is not received by the server.
-# ClientInspector normally sends a modlist request to the ClientInspector located on the client side and awaits a response for 10 seconds.
+# ClientInspector normally sends a modlist request to the ClientInspector located on the client side and awaits a response for the time specified in mod_list_await_time option.
 # Use %PLAYER% placeholder to target the player. This placeholder will be replaced with the actual player by the plugin.
 # Note: Don't put the slash "/" in front of the command.
 # E.g. commands_to_run_when_modlist_not_received=["kick %PLAYER% ClientInspector not installed on the client side"]
 commands_to_run_when_modlist_not_received = []
+
+# The time in seconds to wait for mod list packet.
+# When server does not get mod list packet from client it will execute commands_to_run_when_modlist_not_received on the client.
+# Default: 10
+mod_list_await_time=10
 
 # Set of commands that should be run against the player after detecing a mod from the 'mods_to_detect' list.
 # Use %PLAYER% placeholder to target the player. This placeholder will be replaced with the actual player by the plugin.

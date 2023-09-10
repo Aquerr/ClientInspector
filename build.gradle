@@ -167,7 +167,7 @@ test {
     useJUnitPlatform()
 }
 
-tasks.create("publishBuildOnDiscord") {
+tasks.register("publishBuildOnDiscord") {
     group = "Publishing"
     description = "Task for publishing the jar file to discord's jenkins channel"
     doLast {

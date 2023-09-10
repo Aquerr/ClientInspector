@@ -26,7 +26,7 @@ public final class ClientInspectorPacketRegistry
     public static void registerPackets()
     {
         int messageId = 0;
-        INSTANCE.registerMessage(++messageId, ModListPacket.class, ModListPacket::toBytes, ModListPacket::fromBytes, ModListPacket::handlePacket, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        INSTANCE.registerMessage(++messageId, ModListPacketResponse.class, ModListPacketResponse::toBytes, ModListPacketResponse::fromBytes, ModListPacketResponse::handlePacket, Optional.of(NetworkDirection.PLAY_TO_SERVER));
         INSTANCE.registerMessage(++messageId, RequestModListPacket.class, RequestModListPacket::toBytes, RequestModListPacket::fromBytes, RequestModListPacket::handlePacket, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 }
