@@ -11,7 +11,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static java.lang.String.format;
 
@@ -29,6 +32,8 @@ public class Configuration
     private List<String> commandsToRunIfModListNotReceived;
     private List<String> commandsToRun;
     private Set<String> modsToDetect;
+
+    private int modListAwaitTime;
 
     public static void init()
     {
@@ -58,6 +63,11 @@ public class Configuration
         return modsToDetect;
     }
 
+    public int getModListAwaitTime()
+    {
+        return modListAwaitTime;
+    }
+
     private void load()
     {
         if (Files.notExists(configFilePath))
@@ -81,6 +91,7 @@ public class Configuration
         this.commandsToRun = config.get("commands_to_run");
         this.modsToDetect = new HashSet<>(config.<ArrayList<String>>get("mods_to_detect"));
         this.commandsToRunIfModListNotReceived = config.get("commands_to_run_when_modlist_not_received");
+        this.modListAwaitTime = config.get("mod_list_await_time");
 
         config.close();
     }

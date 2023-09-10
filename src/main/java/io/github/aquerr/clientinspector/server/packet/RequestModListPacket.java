@@ -2,7 +2,6 @@ package io.github.aquerr.clientinspector.server.packet;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.loading.moddiscovery.BackgroundScanHandler;
-import net.minecraftforge.fml.loading.moddiscovery.ClasspathLocator;
 import net.minecraftforge.fml.loading.moddiscovery.ModDiscoverer;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
@@ -21,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -79,7 +77,7 @@ public class RequestModListPacket implements ClientInspectorPacket
         {
             LOGGER.debug("Found mod-list: {}", Arrays.toString(modIds.toArray()));
         }
-        ClientInspectorPacketRegistry.INSTANCE.sendToServer(new ModListPacket(new ArrayList<>(modIds)));
+        ClientInspectorPacketRegistry.INSTANCE.sendToServer(new ModListPacketResponse(new ArrayList<>(modIds)));
     }
 
     private static Map<String, ?> prepareArguments()
