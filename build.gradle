@@ -17,7 +17,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 
 group 'io.github.aquerr.clientinspector'
-version '2.0.1-1.16.5-SNAPSHOT'
+version '2.0.2-1.16.5-SNAPSHOT'
 description = 'A plugin that inspects connecting players data and executes specified commands on them'
 
 compileJava.options.encoding = 'UTF-8'
@@ -179,7 +179,7 @@ test {
     useJUnitPlatform()
 }
 
-tasks.create("publishBuildOnDiscord") {
+tasks.register("publishBuildOnDiscord") {
     group = "Publishing"
     description = "Task for publishing the jar file to discord's jenkins channel"
     doLast {

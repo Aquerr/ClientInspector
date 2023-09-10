@@ -56,7 +56,7 @@ public class RequestModListPacket implements ClientInspectorPacket
         {
             LOGGER.debug("Found mod-list: {}", Arrays.toString(modsIds.toArray()));
         }
-        ClientInspectorPacketRegistry.INSTANCE.sendToServer(new ModListPacket(modsIds));
+        ClientInspectorPacketRegistry.INSTANCE.sendToServer(new ModListPacketResponse(modsIds));
     }
 
     private static List<String> getModsIds(List<ModFile> modFiles)

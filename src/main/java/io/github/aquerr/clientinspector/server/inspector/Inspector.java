@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import io.github.aquerr.clientinspector.server.config.Configuration;
 import io.github.aquerr.clientinspector.server.log.LogHandler;
 import io.github.aquerr.clientinspector.server.packet.ClientInspectorPacketRegistry;
-import io.github.aquerr.clientinspector.server.packet.ModListPacket;
 import io.github.aquerr.clientinspector.server.packet.RequestModListPacket;
 import io.github.aquerr.clientinspector.server.packet.ServerPacketAwaiter;
 import net.minecraft.command.Commands;
@@ -56,7 +55,7 @@ public final class Inspector
     public void requestAndVerifyModListFromPlayer(ServerPlayerEntity player)
     {
         LOGGER.info("Sending mod-list request to client...");
-        ServerPacketAwaiter.getInstance().awaitForPacketFromPlayer(player, ModListPacket.class, 10);
+        ServerPacketAwaiter.getInstance().awaitForPacketFromPlayer(player);
         ClientInspectorPacketRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new RequestModListPacket());
     }
 
@@ -100,7 +99,7 @@ public final class Inspector
             }
         }
 
-        if (detectedModsNames.size() != 0)
+        if (!detectedModsNames.isEmpty())
         {
             // IO operation -> run in separate thread.
             CompletableFuture.runAsync(() ->

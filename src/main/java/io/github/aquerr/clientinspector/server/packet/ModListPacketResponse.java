@@ -11,18 +11,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ModListPacket implements ClientInspectorPacket
+public class ModListPacketResponse implements ClientInspectorPacket
 {
-    private static final Logger LOGGER = LogManager.getLogger(ModListPacket.class);
+    private static final Logger LOGGER = LogManager.getLogger(ModListPacketResponse.class);
 
     private final List<String> modEntries;
 
-    public ModListPacket()
+    public ModListPacketResponse()
     {
         this.modEntries = new LinkedList<>();
     }
 
-    public ModListPacket(final List<String> modEntries)
+    public ModListPacketResponse(final List<String> modEntries)
     {
         this.modEntries = modEntries;
     }
@@ -32,17 +32,17 @@ public class ModListPacket implements ClientInspectorPacket
         return modEntries;
     }
 
-    public static PacketBuffer toBytes(ModListPacket modListPacket, PacketBuffer buffer)
+    public static PacketBuffer toBytes(ModListPacketResponse modListPacketResponse, PacketBuffer buffer)
     {
-        buffer.writeVarInt(modListPacket.getModEntries().size());
-        for (String modName: modListPacket.getModEntries())
+        buffer.writeVarInt(modListPacketResponse.getModEntries().size());
+        for (String modName: modListPacketResponse.getModEntries())
         {
             buffer.writeString(modName);
         }
         return buffer;
     }
 
-    public static ModListPacket fromBytes(PacketBuffer buffer)
+    public static ModListPacketResponse fromBytes(PacketBuffer buffer)
     {
         List<String> modEntries = new LinkedList<>();
 
@@ -52,16 +52,15 @@ public class ModListPacket implements ClientInspectorPacket
             modEntries.add(buffer.readString());
         }
 
-        return new ModListPacket(modEntries);
+        return new ModListPacketResponse(modEntries);
     }
 
-    public static void handlePacket(ModListPacket modListPacket, Supplier<NetworkEvent.Context> contextSupplier)
+    public static void handlePacket(ModListPacketResponse modListPacketResponse, Supplier<NetworkEvent.Context> contextSupplier)
     {
-        LOGGER.info("Received mod-list packet from ClientInspector located on the client side.");
-        final List<String> modEntries = modListPacket.getModEntries();
         final ServerPlayerEntity entityPlayer = contextSupplier.get().getSender();
-        ServerPacketAwaiter.LAST_PACKETS_FROM_PLAYERS.put(entityPlayer.getUniqueID(), ModListPacket.class);
-
+        final List<String> modEntries = modListPacketResponse.getModEntries();
+        LOGGER.info("Received mod-list packet from player: {}, {}.", entityPlayer.getName().getString(), entityPlayer.getPlayerIP());
+        ServerPacketAwaiter.getInstance().removeAwaitPacket(entityPlayer);
         entityPlayer.getServer().deferTask(() -> Inspector.getInstance().inspectWithMods(entityPlayer, modEntries));
     }
 }
