@@ -4,6 +4,7 @@ import io.github.aquerr.clientinspector.server.ServerProxy;
 import io.github.aquerr.clientinspector.server.packet.ClientInspectorPacketRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,18 +19,21 @@ public class ClientInspector
     public ClientInspector()
     {
         // Register the setup method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupCommon);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupServer);
     }
 
-    private void setup(final FMLCommonSetupEvent event)
+    private void setupCommon(final FMLCommonSetupEvent event)
     {
         LOGGER.info("Initializing " + ID);
 
-//        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Configuration);
-
-        ServerProxy.init();
         ClientInspectorPacketRegistry.registerPackets();
 
         LOGGER.info("Mod load completed!");
+    }
+
+    private void setupServer(final FMLDedicatedServerSetupEvent event)
+    {
+        ServerProxy.init();
     }
 }
