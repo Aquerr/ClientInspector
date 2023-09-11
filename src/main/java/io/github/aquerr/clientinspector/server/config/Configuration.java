@@ -9,14 +9,14 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static java.lang.String.format;
 
-public class Configuration
+public final class Configuration
 {
     private static final Path configFilePath = FMLPaths.CONFIGDIR.get().resolve(ClientInspector.ID).resolve("config.toml");
 
@@ -86,11 +86,23 @@ public class Configuration
         CommentedFileConfig config = CommentedFileConfig.of(configFilePath);
         config.load();
 
-        this.commandsToRun = config.get("commands_to_run");
-        this.modsToDetect = new HashSet<>(config.<ArrayList<String>>get("mods_to_detect"));
-        this.commandsToRunIfModListNotReceived = config.get("commands_to_run_when_modlist_not_received");
-        this.modListAwaitTime = config.get("mod_list_await_time");
+        this.commandsToRun = getOrDefault(config, "commands_to_run", Collections.emptyList());
+        this.modsToDetect = new HashSet<>(getOrDefault(config, "mods_to_detect", Collections.emptyList()));
+        this.commandsToRunIfModListNotReceived = getOrDefault(config, "commands_to_run_when_modlist_not_received", Collections.emptyList());
+        this.modListAwaitTime = getOrDefault(config, "mod_list_await_time", 10);
 
         config.close();
+    }
+
+    private <T> T getOrDefault(CommentedFileConfig config, String path, T defaultValue)
+    {
+        try
+        {
+            return config.get(path);
+        }
+        catch (Exception exception)
+        {
+            return defaultValue;
+        }
     }
 }
