@@ -43,7 +43,7 @@ public class LogHandler
 
     public void logPlayerWithMods(final ServerPlayerEntity player, final Set<String> detectedModsNames) throws IOException
     {
-        LOGGER.info("Logging player '" + player.getName() + "' with mods " + Arrays.toString(detectedModsNames.toArray()));
+        LOGGER.info("Logging player '" + player.getName().getString() + "' with mods " + Arrays.toString(detectedModsNames.toArray()));
         logMessage(buildLogMessage(player, detectedModsNames));
     }
 
@@ -55,7 +55,7 @@ public class LogHandler
                 .append("]")
                 .append(" Player ")
                 .append("[name=")
-                .append(player.getName())
+                .append(player.getName().getString())
                 .append(", uuid=")
                 .append(player.getUniqueID())
                 .append("]")

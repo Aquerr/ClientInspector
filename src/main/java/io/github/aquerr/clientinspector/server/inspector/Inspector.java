@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
 
 public final class Inspector
 {
@@ -117,15 +120,33 @@ public final class Inspector
         }
     }
 
-    private static void executeCommandsOnPlayer(ServerPlayerEntity player, List<String> commandsToRun)
+    private List<String> prepareCommands(List<String> commandsToRun, ServerPlayerEntity player)
     {
+        return commandsToRun.stream()
+                .map(command -> command.replaceAll(PLAYER_PLACEHOLDER, player.getName().getString()))
+                .collect(Collectors.toList());
+    }
+
+    private void executeCommandsOnPlayer(ServerPlayerEntity player, List<String> commandsToRun)
+    {
+        List<String> commands = prepareCommands(configuration.getCommandsToRun(), player);
+
+        try
+        {
+            logHandler.logMessage(format("Executing commands %s on player '%s'", Arrays.toString(commandsToRun.toArray()), player.getName().getString()));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
         final MinecraftServer minecraftServer = player.getServer();
         minecraftServer.deferTask(() -> {
             final Commands commandManager = minecraftServer.getCommandManager();
-            for (final String command : commandsToRun)
+            for (final String command : commands)
             {
                 //Execute commands as console
-                commandManager.handleCommand(minecraftServer.getCommandSource(), command.replaceAll(PLAYER_PLACEHOLDER, player.getName().getString()));
+                commandManager.handleCommand(minecraftServer.getCommandSource(), command);
             }
         });
     }
