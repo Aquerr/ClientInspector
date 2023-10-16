@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import io.github.aquerr.clientinspector.server.config.Configuration;
 import io.github.aquerr.clientinspector.server.log.LogHandler;
 import io.github.aquerr.clientinspector.server.packet.ClientInspectorPacketRegistry;
-import io.github.aquerr.clientinspector.server.packet.ModListPacketResponse;
 import io.github.aquerr.clientinspector.server.packet.RequestModListPacket;
 import io.github.aquerr.clientinspector.server.packet.ServerPacketAwaiter;
 import net.minecraft.commands.Commands;
@@ -22,6 +21,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
 
 public final class Inspector
 {
@@ -114,20 +116,38 @@ public final class Inspector
         }
     }
 
-    private static void executeCommandsOnPlayer(ServerPlayer player, List<String> commandsToRun)
+    private List<String> prepareCommands(List<String> commandsToRun, ServerPlayer player)
     {
+        return commandsToRun.stream()
+                .map(command -> command.replaceAll(PLAYER_PLACEHOLDER, player.getName().getString()))
+                .collect(Collectors.toList());
+    }
+
+    private void executeCommandsOnPlayer(ServerPlayer player, List<String> commandsToRun)
+    {
+        List<String> commands = prepareCommands(configuration.getCommandsToRun(), player);
+
+        try
+        {
+            logHandler.logMessage(format("Executing commands %s on player '%s'", Arrays.toString(commandsToRun.toArray()), player.getName().getString()));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
         final MinecraftServer minecraftServer = player.getServer();
         minecraftServer.doRunTask(new TickTask(10, () -> {
             final Commands commandManager = minecraftServer.getCommands();
-            for (final String command : commandsToRun)
+            for (final String command : commands)
             {
                 //Execute commands as console
-                commandManager.performPrefixedCommand(minecraftServer.createCommandSourceStack(), command.replaceAll(PLAYER_PLACEHOLDER, player.getName().getString()));
+                commandManager.performPrefixedCommand(minecraftServer.createCommandSourceStack(), command);
             }
         }));
     }
 
-    private static Collection<String> getPlayerMods(final ServerPlayer entityPlayerMP)
+    private Collection<String> getPlayerMods(final ServerPlayer entityPlayerMP)
     {
         ServerGamePacketListenerImpl networkHandlerPlayServer = entityPlayerMP.connection;
         ConnectionData connectionData = NetworkHooks.getConnectionData(networkHandlerPlayServer.connection);
