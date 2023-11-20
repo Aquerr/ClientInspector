@@ -38,4 +38,4 @@ Many thanks to [Nbgreen](https://github.com/nbgreen) for plugin idea.
 
 ## Donation
 
-Creation of plugins is really a time consuming task. If you would like to support me then you can **star this repo** or **send me some cookies** through [PayPal](https://www.paypal.me/aquerr).
+Creation of plugins is really a time consuming task. If you would like to support me then you can **star this repo** or **send me some cookies** through [PayPal](https://paypal.me/aquerrnerdi).
