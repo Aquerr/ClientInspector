@@ -40,7 +40,7 @@ public class LogHandler
         }
     }
 
-    public void logPlayerWithMods(final ServerPlayer player, final Set<String> detectedModsNames) throws IOException
+    public void logPlayerWithNotAllowedMods(final ServerPlayer player, final Set<String> detectedModsNames) throws IOException
     {
         LOGGER.info("Logging player '" + player.getName().getString() + "' with mods " + Arrays.toString(detectedModsNames.toArray()));
         logMessage(buildLogMessage(player, detectedModsNames));
@@ -61,7 +61,7 @@ public class LogHandler
                 .append(" connected from '")
                 .append(player.getIpAddress())
                 .append("'")
-                .append(" with detected mods ")
+                .append(" with not allowed mods ")
                 .append(Arrays.toString(detectedModsNames.toArray()))
                 .append("\n");
         return stringBuilder.toString();

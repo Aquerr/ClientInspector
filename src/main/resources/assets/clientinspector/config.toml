@@ -25,3 +25,8 @@ commands_to_run = []
 mods_to_detect = [
     ".*xray.*"
 ]
+
+# Makes "mods_to_detect" list being treated as whitelist instead of blacklist.
+# That means, connecting player is REQUIRED to have ONLY mods that are listed in "mods_to_detect" list.
+# Default: false
+treat_mods_to_detect_as_whitelist=false
