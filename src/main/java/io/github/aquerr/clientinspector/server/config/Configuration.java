@@ -30,6 +30,7 @@ public final class Configuration
     private List<String> commandsToRun;
     private Set<String> modsToDetect;
     private boolean treatModsToDetectAsWhitelist;
+    private String notAllowedModsLogMessageFormat;
 
     private int modListAwaitTime;
 
@@ -72,6 +73,11 @@ public final class Configuration
         return this.treatModsToDetectAsWhitelist;
     }
 
+    public String getNotAllowedModsLogMessageFormat()
+    {
+        return notAllowedModsLogMessageFormat;
+    }
+
     private void load()
     {
         if (Files.notExists(configFilePath))
@@ -97,6 +103,7 @@ public final class Configuration
         this.commandsToRunIfModListNotReceived = getOrDefault(config, "commands_to_run_when_modlist_not_received", Collections.emptyList());
         this.modListAwaitTime = getOrDefault(config, "mod_list_await_time", 10);
         this.treatModsToDetectAsWhitelist = getOrDefault(config, "treat_mods_to_detect_as_whitelist", false);
+        this.notAllowedModsLogMessageFormat = getOrDefault(config, "not_allowed_mods_log_message_format", "[{0}] Player [name={1}, uuid={2}] connected from [{3}] with not allowed mods [{4}]");
 
         config.close();
     }

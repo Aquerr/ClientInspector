@@ -1,6 +1,7 @@
 package io.github.aquerr.clientinspector.server.log;
 
 import io.github.aquerr.clientinspector.ClientInspector;
+import io.github.aquerr.clientinspector.server.config.Configuration;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -42,32 +44,22 @@ public class LogHandler
 
     public void logPlayerWithNotAllowedMods(final ServerPlayer player, final Set<String> detectedModsNames) throws IOException
     {
-        LOGGER.info("Logging player '" + player.getName().getString() + "' with mods " + Arrays.toString(detectedModsNames.toArray()));
         logMessage(buildLogMessage(player, detectedModsNames));
     }
 
     private String buildLogMessage(final ServerPlayer player, final Set<String> detectedModsNames)
     {
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[")
-                .append(LocalTime.now().withNano(0).toString())
-                .append("]")
-                .append(" Player ")
-                .append("[name=")
-                .append(player.getName().getString())
-                .append(", uuid=")
-                .append(player.getUUID())
-                .append("]")
-                .append(" connected from '")
-                .append(player.getIpAddress())
-                .append("'")
-                .append(" with not allowed mods ")
-                .append(Arrays.toString(detectedModsNames.toArray()))
-                .append("\n");
-        return stringBuilder.toString();
+        return MessageFormat.format(
+                Configuration.getInstance().getNotAllowedModsLogMessageFormat(),
+                LocalTime.now().withNano(0).toString(),
+                player.getName().getString(),
+                player.getUUID().toString(),
+                player.getIpAddress(),
+                String.join(",", detectedModsNames)
+        );
     }
 
-    public void logMessage(final String message) throws IOException
+    public synchronized void logMessage(final String message) throws IOException
     {
         LOGGER.info(message);
         final Path logFilePath = this.logsDirPath.resolve("inspection-" + LocalDate.now() + ".log");
