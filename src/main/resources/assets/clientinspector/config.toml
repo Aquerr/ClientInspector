@@ -25,3 +25,16 @@ commands_to_run = []
 mods_to_detect = [
     ".*xray.*"
 ]
+
+# Makes "mods_to_detect" list being treated as whitelist instead of blacklist.
+# That means, connecting player is REQUIRED to have ONLY mods that are listed in "mods_to_detect" list.
+# Default: false
+treat_mods_to_detect_as_whitelist=false
+
+# Log message format
+# {0} = Time
+# {1} = Player Name
+# {2} = Player UUID
+# {3} = Player IP
+# {4} = Detected not allowed mods, comma separated
+not_allowed_mods_log_message_format="[{0}] Player [name={1}, uuid={2}] connected from [{3}] with not allowed mods [{4}]"

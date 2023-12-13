@@ -3,7 +3,6 @@ package io.github.aquerr.clientinspector.server.config;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.google.common.io.Resources;
 import io.github.aquerr.clientinspector.ClientInspector;
-import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -18,8 +17,6 @@ import static java.lang.String.format;
 
 public final class Configuration
 {
-    private static final Path configFilePath = FMLPaths.CONFIGDIR.get().resolve(ClientInspector.ID).resolve("config.toml");
-
     private static Configuration INSTANCE;
 
     public static Configuration getInstance()
@@ -27,23 +24,33 @@ public final class Configuration
         return INSTANCE;
     }
 
+    private final Path configFilePath;
+
     private List<String> commandsToRunIfModListNotReceived;
     private List<String> commandsToRun;
     private Set<String> modsToDetect;
+    private boolean treatModsToDetectAsWhitelist;
+    private String notAllowedModsLogMessageFormat;
 
     private int modListAwaitTime;
 
-    public static void init()
+    public static void init(Path configFilePath)
     {
         if (INSTANCE != null)
             return;
 
-        INSTANCE = new Configuration();
+        INSTANCE = new Configuration(configFilePath);
     }
 
-    private Configuration()
+    private Configuration(Path configFilePath)
     {
+        this.configFilePath = configFilePath;
         load();
+    }
+
+    public boolean shouldTreatModsToDetectAsWhitelist()
+    {
+        return this.treatModsToDetectAsWhitelist;
     }
 
     public List<String> getCommandsToRunIfModListNotReceived()
@@ -64,6 +71,11 @@ public final class Configuration
     public int getModListAwaitTime()
     {
         return modListAwaitTime;
+    }
+
+    public String getNotAllowedModsLogMessageFormat()
+    {
+        return notAllowedModsLogMessageFormat;
     }
 
     private void load()
@@ -90,6 +102,8 @@ public final class Configuration
         this.modsToDetect = new HashSet<>(getOrDefault(config, "mods_to_detect", Collections.emptyList()));
         this.commandsToRunIfModListNotReceived = getOrDefault(config, "commands_to_run_when_modlist_not_received", Collections.emptyList());
         this.modListAwaitTime = getOrDefault(config, "mod_list_await_time", 10);
+        this.treatModsToDetectAsWhitelist = getOrDefault(config, "treat_mods_to_detect_as_whitelist", false);
+        this.notAllowedModsLogMessageFormat = getOrDefault(config, "not_allowed_mods_log_message_format", "[{0}] Player [name={1}, uuid={2}] connected from [{3}] with not allowed mods [{4}]");
 
         config.close();
     }
@@ -98,7 +112,7 @@ public final class Configuration
     {
         try
         {
-            return config.get(path);
+            return config.getOrElse(path, defaultValue);
         }
         catch (Exception exception)
         {

@@ -88,28 +88,15 @@ public final class Inspector
         LOGGER.info("Inspecting player " + player);
         LOGGER.info("Inspecting mods: " + Arrays.toString(mods.toArray()));
 
-        final Set<String> modsNamesToDetect = this.configuration.getModsToDetect();
-        final Set<String> detectedModsNames = new HashSet<>();
-        for (final String playerModName : mods)
-        {
-            for (final String modNameToDetect : modsNamesToDetect)
-            {
-                final Pattern pattern = Pattern.compile(modNameToDetect, Pattern.CASE_INSENSITIVE);
-                if (pattern.matcher(playerModName).matches())
-                {
-                    detectedModsNames.add(playerModName);
-                }
-            }
-        }
-
-        if (!detectedModsNames.isEmpty())
+        final Set<String> notAllowedMods = findNotAllowedMods(mods);
+        if (!notAllowedMods.isEmpty())
         {
             // IO operation -> run in separate thread.
             CompletableFuture.runAsync(() ->
             {
                 try
                 {
-                    this.logHandler.logPlayerWithMods(player, detectedModsNames);
+                    this.logHandler.logPlayerWithNotAllowedMods(player, notAllowedMods);
                 }
                 catch (IOException e)
                 {
@@ -118,6 +105,38 @@ public final class Inspector
             });
             executeCommandsOnPlayer(player, this.configuration.getCommandsToRun());
         }
+    }
+
+    private Set<String> findNotAllowedMods(final Collection<String> mods)
+    {
+        final Set<String> modNameDetectionPatterns = this.configuration.getModsToDetect();
+        final boolean shouldTreatModsToDetectAsWhitelist = this.configuration.shouldTreatModsToDetectAsWhitelist();
+        return findNotAllowedMods(mods, modNameDetectionPatterns, shouldTreatModsToDetectAsWhitelist);
+    }
+
+    private Set<String> findNotAllowedMods(Collection<String> mods, Set<String> modNameDetectionPatterns, boolean isWhiteList)
+    {
+        final Set<String> detectedModsNames = new HashSet<>();
+        boolean notAllowedMod = isWhiteList;
+        for (String mod : mods)
+        {
+            for (final String modNamePattern : modNameDetectionPatterns)
+            {
+                final Pattern pattern = Pattern.compile(modNamePattern, Pattern.CASE_INSENSITIVE);
+                if (pattern.matcher(mod).matches())
+                {
+                    notAllowedMod = !isWhiteList;
+                    break;
+                }
+            }
+
+            if (notAllowedMod)
+            {
+                detectedModsNames.add(mod);
+            }
+        }
+
+        return detectedModsNames;
     }
 
     private List<String> prepareCommands(List<String> commandsToRun, ServerPlayerEntity player)
