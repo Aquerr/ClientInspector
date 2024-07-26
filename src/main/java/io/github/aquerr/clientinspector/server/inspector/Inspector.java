@@ -18,12 +18,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static java.lang.String.format;
 
 public final class Inspector
 {
@@ -150,14 +150,21 @@ public final class Inspector
     {
         List<String> commands = prepareCommands(configuration.getCommandsToRun(), player);
 
-        try
+        player.getServer().doRunTask(new TickTask(10, () ->
         {
-            logHandler.logMessage(format("Executing commands %s on player '%s'", Arrays.toString(commandsToRun.toArray()), player.getName().getString()));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+            try
+            {
+                logHandler.logMessage(MessageFormat.format("[{0}] Executing commands {1} on player ''{2}''",
+                        LocalTime.now().withNano(0),
+                        Arrays.toString(commandsToRun.toArray()),
+                        player.getName().getString()));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }));
+
 
         final MinecraftServer minecraftServer = player.getServer();
         minecraftServer.doRunTask(new TickTask(10, () -> {
