@@ -4,13 +4,12 @@ import io.github.aquerr.clientinspector.server.inspector.Inspector;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class ModListPacketResponse implements ClientInspectorPacket
 {
@@ -56,9 +55,9 @@ public class ModListPacketResponse implements ClientInspectorPacket
         return new ModListPacketResponse(modEntries);
     }
 
-    public static void handlePacket(ModListPacketResponse modListPacketResponse, Supplier<NetworkEvent.Context> contextSupplier)
+    public static void handlePacket(ModListPacketResponse modListPacketResponse, CustomPayloadEvent.Context context)
     {
-        final ServerPlayer entityPlayer = contextSupplier.get().getSender();
+        final ServerPlayer entityPlayer = context.getSender();
         final List<String> modEntries = modListPacketResponse.getModEntries();
         LOGGER.info("Received mod-list packet from player: {}, {}.", entityPlayer.getName().getString(), entityPlayer.getIpAddress());
         ServerPacketAwaiter.getInstance().removeAwaitPacket(entityPlayer);

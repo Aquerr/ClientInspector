@@ -11,8 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraftforge.network.ConnectionData;
-import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.NetworkContext;
 import net.minecraftforge.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,7 +54,7 @@ public final class Inspector
     {
         LOGGER.info("Sending mod-list request to client...");
         ServerPacketAwaiter.getInstance().awaitForPacketFromPlayer(player);
-        ClientInspectorPacketRegistry.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new RequestModListPacket());
+        ClientInspectorPacketRegistry.INSTANCE.send(new RequestModListPacket(), PacketDistributor.PLAYER.with(player));
     }
 
     public void handleNoModListPacketReceived(ServerPlayer entityPlayerMP)
@@ -180,8 +179,7 @@ public final class Inspector
     private Collection<String> getPlayerMods(final ServerPlayer entityPlayerMP)
     {
         ServerGamePacketListenerImpl networkHandlerPlayServer = entityPlayerMP.connection;
-        ConnectionData connectionData = NetworkHooks.getConnectionData(networkHandlerPlayServer.connection);
-        ImmutableList<String> modList = connectionData.getModList();
-        return modList;
+        NetworkContext context = NetworkContext.get(networkHandlerPlayServer.getConnection());
+        return context.getModList().keySet();
     }
 }
