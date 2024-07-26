@@ -13,4 +13,17 @@ public final class ServerProxy
         Configuration.init(FMLPaths.CONFIGDIR.get().resolve(ClientInspector.ID).resolve("config.toml"));
         MinecraftForge.EVENT_BUS.register(new PlayerConnectListener());
     }
+
+    public static void loadCompleted()
+    {
+        if (Configuration.getInstance().shouldPopulateModsToDetectWithServerMods())
+        {
+            Configuration.getInstance().overwriteModsToDetectAndSave();
+        }
+    }
+
+    private ServerProxy()
+    {
+
+    }
 }

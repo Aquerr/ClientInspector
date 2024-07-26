@@ -18,11 +18,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
-
-import static java.lang.String.format;
+import java.util.stream.Collectors;
 
 public final class Inspector
 {
@@ -113,12 +114,15 @@ public final class Inspector
     private Set<String> findNotAllowedMods(Collection<String> mods, Set<String> modNameDetectionPatterns, boolean isWhiteList)
     {
         final Set<String> detectedModsNames = new HashSet<>();
-        boolean notAllowedMod = isWhiteList;
+        final Set<Pattern> patterns = modNameDetectionPatterns.stream()
+                .map(modNamePattern -> Pattern.compile(modNamePattern, Pattern.CASE_INSENSITIVE))
+                .collect(Collectors.toSet());
+
         for (String mod : mods)
         {
-            for (final String modNamePattern : modNameDetectionPatterns)
+            boolean notAllowedMod = isWhiteList;
+            for (final Pattern pattern : patterns)
             {
-                final Pattern pattern = Pattern.compile(modNamePattern, Pattern.CASE_INSENSITIVE);
                 if (pattern.matcher(mod).matches())
                 {
                     notAllowedMod = !isWhiteList;
@@ -146,14 +150,21 @@ public final class Inspector
     {
         List<String> commands = prepareCommands(configuration.getCommandsToRun(), player);
 
-        try
+        player.getServer().doRunTask(new TickTask(10, () ->
         {
-            logHandler.logMessage(format("Executing commands %s on player '%s'", Arrays.toString(commandsToRun.toArray()), player.getName().getString()));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+            try
+            {
+                logHandler.logMessage(MessageFormat.format("[{0}] Executing commands {1} on player ''{2}''",
+                        LocalTime.now().withNano(0),
+                        Arrays.toString(commandsToRun.toArray()),
+                        player.getName().getString()));
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }));
+
 
         final MinecraftServer minecraftServer = player.getServer();
         minecraftServer.doRunTask(new TickTask(10, () -> {

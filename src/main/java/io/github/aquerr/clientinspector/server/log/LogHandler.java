@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -66,6 +67,6 @@ public class LogHandler
         if (Files.notExists(logFilePath))
             Files.createFile(logFilePath);
 
-        Files.write(logFilePath, message.getBytes(), StandardOpenOption.APPEND);
+        Files.write(logFilePath, (message + System.lineSeparator()).getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
     }
 }

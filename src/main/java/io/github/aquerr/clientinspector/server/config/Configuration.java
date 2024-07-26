@@ -1,8 +1,11 @@
 package io.github.aquerr.clientinspector.server.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.toml.TomlFormat;
 import com.google.common.io.Resources;
 import io.github.aquerr.clientinspector.ClientInspector;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.forgespi.language.IModInfo;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -12,6 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -30,6 +34,7 @@ public final class Configuration
     private List<String> commandsToRun;
     private Set<String> modsToDetect;
     private boolean treatModsToDetectAsWhitelist;
+    private boolean populateModsToDetectWithServerMods;
     private String notAllowedModsLogMessageFormat;
 
     private int modListAwaitTime;
@@ -78,6 +83,23 @@ public final class Configuration
         return notAllowedModsLogMessageFormat;
     }
 
+    public boolean shouldPopulateModsToDetectWithServerMods()
+    {
+        return this.populateModsToDetectWithServerMods;
+    }
+
+    public void overwriteModsToDetectAndSave()
+    {
+        this.modsToDetect = ModList.get().getMods().stream()
+                .map(IModInfo::getModId)
+                .collect(Collectors.toSet());
+
+        CommentedFileConfig config = CommentedFileConfig.of(configFilePath, TomlFormat.instance());
+        config.load();
+        config.set("mods_to_detect", this.modsToDetect.stream().toList());
+        config.save();
+    }
+
     private void load()
     {
         if (Files.notExists(configFilePath))
@@ -104,6 +126,7 @@ public final class Configuration
         this.modListAwaitTime = getOrDefault(config, "mod_list_await_time", 10);
         this.treatModsToDetectAsWhitelist = getOrDefault(config, "treat_mods_to_detect_as_whitelist", false);
         this.notAllowedModsLogMessageFormat = getOrDefault(config, "not_allowed_mods_log_message_format", "[{0}] Player [name={1}, uuid={2}] connected from [{3}] with not allowed mods [{4}]");
+        this.populateModsToDetectWithServerMods = getOrDefault(config, "populate_mods_to_detect_with_server_mods", false);
 
         config.close();
     }
