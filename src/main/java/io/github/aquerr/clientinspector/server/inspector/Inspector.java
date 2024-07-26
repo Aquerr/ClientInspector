@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -113,12 +114,15 @@ public final class Inspector
     private Set<String> findNotAllowedMods(Collection<String> mods, Set<String> modNameDetectionPatterns, boolean isWhiteList)
     {
         final Set<String> detectedModsNames = new HashSet<>();
-        boolean notAllowedMod = isWhiteList;
+        final Set<Pattern> patterns = modNameDetectionPatterns.stream()
+                .map(modNamePattern -> Pattern.compile(modNamePattern, Pattern.CASE_INSENSITIVE))
+                .collect(Collectors.toSet());
+
         for (String mod : mods)
         {
-            for (final String modNamePattern : modNameDetectionPatterns)
+            boolean notAllowedMod = isWhiteList;
+            for (final Pattern pattern : patterns)
             {
-                final Pattern pattern = Pattern.compile(modNamePattern, Pattern.CASE_INSENSITIVE);
                 if (pattern.matcher(mod).matches())
                 {
                     notAllowedMod = !isWhiteList;
