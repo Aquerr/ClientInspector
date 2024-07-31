@@ -1,6 +1,7 @@
 package io.github.aquerr.clientinspector.server.packet;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.fml.loading.moddiscovery.BackgroundScanHandler;
 import net.minecraftforge.fml.loading.moddiscovery.ModDiscoverer;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
@@ -10,7 +11,7 @@ import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.forgespi.locating.IModFile;
 import net.minecraftforge.forgespi.locating.IModLocator;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +23,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class RequestModListPacket implements ClientInspectorPacket
@@ -39,7 +39,7 @@ public class RequestModListPacket implements ClientInspectorPacket
         return buffer;
     }
 
-    public static void handlePacket(RequestModListPacket modListPacket, Supplier<NetworkEvent.Context> contextSupplier)
+    public static void handlePacket(RequestModListPacket modListPacket, CustomPayloadEvent.Context context)
     {
         LOGGER.info("Sending mod-list packet to the server...");
         ModDiscoverer modDiscoverer = new ModDiscoverer(prepareArguments());
@@ -77,7 +77,7 @@ public class RequestModListPacket implements ClientInspectorPacket
         {
             LOGGER.debug("Found mod-list: {}", Arrays.toString(modIds.toArray()));
         }
-        ClientInspectorPacketRegistry.INSTANCE.sendToServer(new ModListPacketResponse(new ArrayList<>(modIds)));
+        ClientInspectorPacketRegistry.INSTANCE.send(new ModListPacketResponse(new ArrayList<>(modIds)), PacketDistributor.SERVER.noArg());
     }
 
     private static Map<String, ?> prepareArguments()
