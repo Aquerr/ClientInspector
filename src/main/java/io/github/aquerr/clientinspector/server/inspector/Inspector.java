@@ -141,13 +141,17 @@ public final class Inspector
     private List<String> prepareCommands(List<String> commandsToRun, ServerPlayer player)
     {
         return commandsToRun.stream()
-                .map(command -> command.replaceAll(PLAYER_PLACEHOLDER, player.getName().getString()))
+                .map(command -> command.replace(PLAYER_PLACEHOLDER, player.getName().getString()))
                 .toList();
     }
 
     private void executeCommandsOnPlayer(ServerPlayer player, List<String> commandsToRun)
     {
-        List<String> commands = prepareCommands(configuration.getCommandsToRun(), player);
+        List<String> commands = prepareCommands(commandsToRun, player);
+        if (commands.isEmpty())
+        {
+            return;
+        }
 
         player.getServer().doRunTask(new TickTask(10, () ->
         {
@@ -155,7 +159,7 @@ public final class Inspector
             {
                 logHandler.logMessage(MessageFormat.format("[{0}] Executing commands {1} on player ''{2}''",
                         LocalTime.now().withNano(0),
-                        Arrays.toString(commandsToRun.toArray()),
+                        Arrays.toString(commands.toArray()),
                         player.getName().getString()));
             }
             catch (IOException e)
