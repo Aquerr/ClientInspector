@@ -145,13 +145,17 @@ public final class Inspector
     private List<String> prepareCommands(List<String> commandsToRun, ServerPlayerEntity player)
     {
         return commandsToRun.stream()
-                .map(command -> command.replaceAll(PLAYER_PLACEHOLDER, player.getName().getString()))
+                .map(command -> command.replace(PLAYER_PLACEHOLDER, player.getName().getString()))
                 .collect(Collectors.toList());
     }
 
     private void executeCommandsOnPlayer(ServerPlayerEntity player, List<String> commandsToRun)
     {
-        List<String> commands = prepareCommands(configuration.getCommandsToRun(), player);
+        List<String> commands = prepareCommands(commandsToRun, player);
+        if (commands.isEmpty())
+        {
+            return;
+        }
 
         player.getServer().deferTask(() ->
         {
